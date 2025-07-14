@@ -1,10 +1,22 @@
 # Cocaso Drum Coach
 
-A comprehensive drum practice webapp designed to help drummers improve their skills with pattern generation and integrated metronome functionality.
+**Cocaso Drum Coach** (from now on **CDC**) is a simple, lightweight, yet powerful drum practice tool designed to help myself (and hopefully others!) to learn and practice the beautiful art of drumming. It includes common paradiddles and rudiments as well as random pattern generation and integrated metronome functionality to make it enough by itself, no external stuff.
+
+## What CDC is and what it isn't
+
+### It is:
+
+* A simple app that I can just open anywhere, generate some patterns, grab my practice pad and **practice**.
+
+### It isn't:
+
+* A fully capable or dreamed drummer 'companion' app
+* Something that can show or read staff notation
+* Something that probably no professional drummer may find useful (and that's fine)
 
 ## Technology
 
-Built with **good old plain HTML, JavaScript, and CSS** - no frameworks or external dependencies required! This ensures maximum compatibility and lightweight performance.
+Built with **good old plain HTML, JavaScript, and CSS** - no frameworks or external dependencies required! This ensures maximum compatibility and performance.
 
 ## Features
 
@@ -28,6 +40,15 @@ Built with **good old plain HTML, JavaScript, and CSS** - no frameworks or exter
 - **Customizable Practice**: Select specific strokes and configure bar lengths
 - **Visual Stroke Coding**: Color-coded strokes for easy reading
 
+## Roadmap
+
+Things I would like to add to better serve as a practice companion. Implementing these will depend on a tradeoff of their complexity, the value I can get from them from a learning perspective and the fact that they match the intention of the app.
+
+* Better UX, specially in portable devices like phones and tablets. Think of starting / stopping the metronome by tapping the screen, not cropping the exercise view, and such.
+* Import exercises. Just copy & paste a pattern and create a working exercise from it. The app will automatically add all the cool features (metronome highlighting, strokes rotation, etc)
+* Make '3-line' exercises display (one for each type of stroke: R, L, K) Thus, it would be possible to define exercises that hit multiple strokes at once (like R+K, R+L, and so on)
+* More 'structures' like triplets and other complex rhythms (e.g. mix quavers and crotchets).
+
 ## Device Compatibility
 
 Works on **any device** as long as it runs basic JavaScript, including:
@@ -38,9 +59,9 @@ Works on **any device** as long as it runs basic JavaScript, including:
 
 ## Getting Started
 
-1. **Clone or Download**: Get the project files
-2. **Open**: Simply open `index.html` in any web browser
-3. **Practice**: Generate patterns and start practicing with the metronome!
+1. **Open**: Head to https://fynardo.github.io/cocaso-drum-coach/ or download the files and open `index.html` in any web browser.
+2. **Practice**: Generate patterns and start practicing with the metronome!
+3. That's it
 
 ## Usage
 
