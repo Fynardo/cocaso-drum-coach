@@ -1,20 +1,100 @@
+/* CSS Variables for Theme Support */
+:root {
+    /* Light theme colors */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: white;
+    --bg-tertiary: #f8f9fa;
+    --bg-success: #d4edda;
+    --bg-highlight: #ffeaa7;
+    --bg-hover: #f0f0f0;
+    
+    --text-primary: #333;
+    --text-secondary: #555;
+    --text-tertiary: #666;
+    --text-success: #155724;
+    --text-muted: #495057;
+    --text-info: #007bff;
+    
+    --border-primary: #ddd;
+    --border-secondary: #dee2e6;
+    --border-success: #c3e6cb;
+    
+    --btn-primary: #007bff;
+    --btn-primary-hover: #0056b3;
+    --btn-success: #28a745;
+    --btn-success-hover: #218838;
+    --btn-danger: #dc3545;
+    --btn-danger-hover: #c82333;
+    --btn-secondary: #6c757d;
+    --btn-secondary-hover: #5a6268;
+    
+    --stroke-r: #dc3545;
+    --stroke-l: #0d6efd;
+    --stroke-k: #198754;
+    
+    --shadow-light: rgba(0,0,0,0.1);
+    --shadow-medium: rgba(0,0,0,0.2);
+    --shadow-glow: rgba(255, 234, 167, 0.8);
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3a3a3a;
+    --bg-success: #1e3a2e;
+    --bg-highlight: #4a4a2a;
+    --bg-hover: #404040;
+    
+    --text-primary: #e0e0e0;
+    --text-secondary: #cccccc;
+    --text-tertiary: #aaaaaa;
+    --text-success: #90ee90;
+    --text-muted: #b0b0b0;
+    --text-info: #4da6ff;
+    
+    --border-primary: #555;
+    --border-secondary: #444;
+    --border-success: #4a5d4a;
+    
+    --btn-primary: #0d6efd;
+    --btn-primary-hover: #0b5ed7;
+    --btn-success: #198754;
+    --btn-success-hover: #157347;
+    --btn-danger: #dc3545;
+    --btn-danger-hover: #bb2d3b;
+    --btn-secondary: #6c757d;
+    --btn-secondary-hover: #5c636a;
+    
+    --stroke-r: #ff6b6b;
+    --stroke-l: #4dabf7;
+    --stroke-k: #51cf66;
+    
+    --shadow-light: rgba(0,0,0,0.3);
+    --shadow-medium: rgba(0,0,0,0.4);
+    --shadow-glow: rgba(255, 234, 167, 0.3);
+}
+
 body {
     font-family: Arial, sans-serif;
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
-    background-color: white;
+    background-color: var(--bg-secondary);
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px var(--shadow-light);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 h1 {
-    color: #333;
+    color: var(--text-primary);
     text-align: center;
     margin-bottom: 30px;
 }
@@ -42,16 +122,23 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #555;
+    color: var(--text-secondary);
 }
 
 input[type="text"], input[type="number"], select {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-primary);
     border-radius: 4px;
     font-size: 16px;
-    background-color: white;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--btn-primary);
 }
 
 .checkbox-group {
@@ -73,7 +160,7 @@ input[type="text"], input[type="number"], select {
 }
 
 .submit-btn {
-    background-color: #007bff;
+    background-color: var(--btn-primary);
     color: white;
     padding: 12px 30px;
     border: none;
@@ -82,44 +169,46 @@ input[type="text"], input[type="number"], select {
     cursor: pointer;
     width: 100%;
     margin-top: 20px;
+    transition: background-color 0.3s ease;
 }
 
 .submit-btn:hover {
-    background-color: #0056b3;
+    background-color: var(--btn-primary-hover);
 }
 
 .exercise-div {
     margin-top: 20px;
     padding: 15px;
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
+    background-color: var(--bg-success);
+    border: 1px solid var(--border-success);
     border-radius: 4px;
-    color: #155724;
+    color: var(--text-success);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .stroke-r {
-    color: #dc3545;
+    color: var(--stroke-r);
     font-weight: bold;
 }
 
 .stroke-l {
-    color: #0d6efd;
+    color: var(--stroke-l);
     font-weight: bold;
 }
 
 .stroke-k {
-    color: #198754;
+    color: var(--stroke-k);
     font-weight: bold;
 }
 
 .stroke-r-lower {
-    color: #dc3545;
+    color: var(--stroke-r);
     font-weight: bold;
     font-size: 20px;
 }
 
 .stroke-l-lower {
-    color: #0d6efd;
+    color: var(--stroke-l);
     font-weight: bold;
     font-size: 20px;
 }
@@ -127,9 +216,10 @@ input[type="text"], input[type="number"], select {
 .metronome-section {
     margin-top: 30px;
     padding: 20px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
     border-radius: 8px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .metronome-controls {
@@ -146,43 +236,44 @@ input[type="text"], input[type="number"], select {
     font-size: 16px;
     cursor: pointer;
     font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
 .play-btn {
-    background-color: #28a745;
+    background-color: var(--btn-success);
     color: white;
 }
 
 .play-btn:hover {
-    background-color: #218838;
+    background-color: var(--btn-success-hover);
 }
 
 .stop-btn {
-    background-color: #dc3545;
+    background-color: var(--btn-danger);
     color: white;
 }
 
 .stop-btn:hover {
-    background-color: #c82333;
+    background-color: var(--btn-danger-hover);
 }
 
 .bpm-display {
     font-size: 18px;
     font-weight: bold;
-    color: #495057;
+    color: var(--text-muted);
 }
 
 .metronome-status {
     margin-top: 10px;
     font-weight: bold;
-    color: #007bff;
+    color: var(--text-info);
 }
 
 .stroke-highlight {
-    background-color: #ffeaa7;
+    background-color: var(--bg-highlight);
     padding: 0px;
     border-radius: 3px;
-    box-shadow: 0 0 8px rgba(255, 234, 167, 0.8);
+    box-shadow: 0 0 8px var(--shadow-glow);
     transition: all 0.1s ease;
 }
 
@@ -206,13 +297,13 @@ input[type="text"], input[type="number"], select {
 }
 
 .stroke-span:hover {
-    background-color: #f0f0f0;
+    background-color: var(--bg-hover);
     transform: scale(1.1);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px var(--shadow-medium);
 }
 
 .copy-button {
-    background-color: #6c757d;
+    background-color: var(--btn-secondary);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -220,23 +311,51 @@ input[type="text"], input[type="number"], select {
     font-size: 14px;
     cursor: pointer;
     margin-top: 10px;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s ease;
 }
 
 .copy-button:hover {
-    background-color: #5a6268;
+    background-color: var(--btn-secondary-hover);
 }
 
 .copy-button.copied {
-    background-color: #28a745;
+    background-color: var(--btn-success);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--btn-secondary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px var(--shadow-medium);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    background-color: var(--btn-secondary-hover);
+    transform: scale(1.1);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
 }
 
 /* Footer styles */
 .footer {
     margin-top: 40px;
     padding: 20px 0;
-    border-top: 1px solid #dee2e6;
-    color: #666;
+    border-top: 1px solid var(--border-secondary);
+    color: var(--text-tertiary);
+    transition: border-color 0.3s ease;
 }
 
 .footer-content {
@@ -252,7 +371,7 @@ input[type="text"], input[type="number"], select {
 }
 
 .footer-item strong {
-    color: #333;
+    color: var(--text-primary);
 }
 
 /* Responsive footer */
@@ -261,5 +380,13 @@ input[type="text"], input[type="number"], select {
         flex-direction: column;
         text-align: center;
         gap: 10px;
+    }
+    
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
     }
 }

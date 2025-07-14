@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light theme">
+        🌙
+    </button>
+    
     <div class="container">
         <h1>Cocaso Drum Coach</h1>
         
@@ -104,7 +109,7 @@
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-item">
-                    v.0.0.1
+                    v.0.0.2
                 </div>
                 <div class="footer-item">
                     <strong>Authors:</strong> Fynardo & Claude
@@ -596,13 +601,13 @@
         }
         
         // Add event listeners for input changes
-        document.addEventListener('DOMContentLoaded', function() {
+        function setupEventListeners() {
             const bpmInput = document.getElementById('bpm');
             const structureSelect = document.getElementById('structure');
             
             bpmInput.addEventListener('input', handleBPMChange);
             structureSelect.addEventListener('change', handleStructureChange);
-        });
+        }
         
         // Handle metronome with keyboard (spacebar)
         document.addEventListener('keydown', function(event) {
@@ -763,6 +768,83 @@
             }
             return result;
         }
+        
+        // ===== THEME SWITCHING FUNCTIONALITY =====
+        
+        // Theme management
+        const ThemeManager = {
+            // Get current theme from localStorage or default to light
+            getCurrentTheme: function() {
+                return localStorage.getItem('theme') || 'light';
+            },
+            
+            // Set theme and save to localStorage
+            setTheme: function(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                this.updateToggleIcon(theme);
+            },
+            
+            // Update the toggle button icon
+            updateToggleIcon: function(theme) {
+                const toggleButton = document.getElementById('theme-toggle');
+                if (theme === 'dark') {
+                    toggleButton.textContent = '☀️';
+                    toggleButton.title = 'Switch to light theme';
+                } else {
+                    toggleButton.textContent = '🌙';
+                    toggleButton.title = 'Switch to dark theme';
+                }
+            },
+            
+            // Toggle between light and dark themes
+            toggleTheme: function() {
+                const currentTheme = this.getCurrentTheme();
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                this.setTheme(newTheme);
+            },
+            
+            // Initialize theme on page load
+            init: function() {
+                const savedTheme = this.getCurrentTheme();
+                this.setTheme(savedTheme);
+                
+                // Add click event listener to toggle button
+                document.getElementById('theme-toggle').addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+                
+                // Optional: Auto-detect system preference if no saved theme
+                if (!localStorage.getItem('theme')) {
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        this.setTheme('dark');
+                    }
+                }
+                
+                // Optional: Listen for system theme changes
+                if (window.matchMedia) {
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                        // Only auto-change if user hasn't manually set a preference
+                        if (!localStorage.getItem('theme')) {
+                            this.setTheme(e.matches ? 'dark' : 'light');
+                        }
+                    });
+                }
+            }
+        };
+        
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year
+            const currentYear = new Date().getFullYear();
+            document.getElementById('current-year').textContent = currentYear;
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Initialize theme manager
+            ThemeManager.init();
+        });
     </script>
 </body>
 </html> 
