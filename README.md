@@ -50,14 +50,6 @@ Things I would like to add to better serve as a practice companion. Implementing
 * Make '3-line' exercises display (one for each type of stroke: R, L, K) Thus, it would be possible to define exercises that hit multiple strokes at once (like R+K, R+L, and so on)
 * More 'structures' like triplets and other complex rhythms (e.g. mix quavers and crotchets).
 
-## Roadmap
-
-Things I would like to add to better serve as a practice companion. Implementing these will depend on a tradeoff of their complexity, the value I can get from them from a learning perspective and the fact that they match the intention of the app.
-
-* Better UX, specially in portable devices like phones and tablets. Think of starting / stopping the metronome by tapping the screen, not cropping the exercise view, and such.
-* Import exercises. Just copy & paste a pattern and create a working exercise from it. The app will automatically add all the cool features (metronome highlighting, strokes rotation, etc)
-* Make '3-line' exercises display (one for each type of stroke: R, L, K) Thus, it would be possible to define exercises that hit multiple strokes at once (like R+K, R+L, and so on)
-* More 'structures' like triplets and other complex rhythms (e.g. mix quavers and crotchets).
 
 ## Device Compatibility
 
@@ -88,6 +80,7 @@ cocaso-drum-coach/
 ├── index.html          # Main application file
 ├── style.css           # Styling and layout
 └── README.md          # This file
+└── LICENSE          # MIT License file
 ```
 
 ## Authors
@@ -97,7 +90,7 @@ cocaso-drum-coach/
 
 ## Version
 
-v.0.0.1
+v.0.0.2
 
 ---
 
