@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocaso Drum Coach</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cocaso Drum Coach</h1>
+        
+        <form id="exercise-form">
+            <!-- First row: Pattern and Bars -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="input">Pattern:</label>
+                    <select id="input" name="pattern" required>
+                        <option value="">Select an option...</option>
+                        <option value="random">Random</option>
+                        <option value="paradiddle" selected>Paradiddle</option>
+                        <option value="paradiddle-left">Paradiddle Left</option>
+                        <option value="double-paradiddle">Double Paradiddle</option>
+                        <option value="single-beat">Single Beat</option>
+                        <option value="single-beat-left">Single Beat Left</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bars">Bars:</label>
+                    <input type="text" id="bars" name="bars" value="8" required>
+                </div>
+            </div>
+            
+            <!-- Second row: Strokes -->
+            <div class="form-row strokes-row">
+                <div class="form-group">
+                    <label>Strokes:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="r" name="strokes" value="R" checked>
+                            <label for="r" class="stroke-r">R</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="r-lower" name="strokes" value="r">
+                            <label for="r-lower" class="stroke-r-lower">r</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="l" name="strokes" value="L" checked>
+                            <label for="l" class="stroke-l">L</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="l-lower" name="strokes" value="l">
+                            <label for="l-lower" class="stroke-l-lower">l</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="k" name="strokes" value="K">
+                            <label for="k" class="stroke-k">K</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="checkbox-item">
+                <label for="flip">Duplicate and flip the pattern: </label>
+                <input type="checkbox" id="flip" name="flip" value="true" checked>
+            </div>
+            <!-- Third row: Random Bar length -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="rnd_len">Random bar length:</label>
+                    <input type="text" id="rnd-len" name="rnd_len" value="6" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">Generate Exercise</button>
+        </form>
+        
+        <div class="metronome-section">
+            <h3>Metronome</h3>
+            <div class="form-group">
+                <label for="bpm">BPM:</label>
+                <input type="number" id="bpm" name="bpm" value="100" min="30" max="250" required>
+            </div>
+            <div class="form-group">
+                <label for="structure">Structure:</label>
+                <select id="structure" name="structure" required>
+                    <option value="crotchet">Crotchet (4 clicks per bar)</option>
+                    <option value="quaver">Quaver (8 clicks per bar)</option>
+                    <option value="semiquaver">Semiquaver (16 clicks per bar)</option>
+                </select>
+                <small style="color: #666;">Choose the subdivision structure for your practice<br>Starts with a preparation bar, then exercise, then rest bars between cycles</small>
+            </div>
+            <div class="metronome-controls">
+                <button class="metronome-btn play-btn" onclick="startMetronome()">Play</button>
+                <button class="metronome-btn stop-btn" onclick="stopMetronome()">Stop</button>
+            </div>
+            <div class="metronome-status" id="metronome-status">Ready</div>
+            <small style="color: #666; margin-top: 5px; display: block;"><em>Tip: Press spacebar to start/stop the metronome</em></small>
+        </div>
+
+        <div id="exercise-div"></div>
+        
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-item">
+                    v.0.0.1
+                </div>
+                <div class="footer-item">
+                    <strong>Authors:</strong> Fynardo & Claude
+                </div>
+                
+                <div class="footer-item">
+                    <span id="current-year"></span>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // Set current year dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentYear = new Date().getFullYear();
+            document.getElementById('current-year').textContent = currentYear;
+        });
+        
+        // Metronome variables
+        let metronomeInterval = null;
+        let audioContext = null;
+        let isPlaying = false;
+        let currentStrokeIndex = 0;
+        let totalStrokes = 0;
+        let isInEmptyBar = false;
+        let emptyBarClickCount = 0;
+        let isPreparationBar = false;
+        let clicksPerBar = 4; // Default to crotchet
+        let emptyBarClicksPerBar = 4; // Quarter notes for empty bars
+        
+        // Stroke cycling variables
+        const strokeCycle = ['R', 'r', 'L', 'l', 'K'];
+        
+        // Form submission handler
+        document.getElementById('exercise-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const formData = new FormData(this);
+            const pattern = formData.get('pattern');
+            const barsStr = formData.get('bars');
+            const flip = formData.get('flip') === 'true';
+            const rndLenStr = formData.get('rnd_len');
+            
+            // Get selected strokes
+            const strokes = [];
+            const strokeCheckboxes = document.querySelectorAll('input[name="strokes"]:checked');
+            strokeCheckboxes.forEach(checkbox => {
+                strokes.push(checkbox.value);
+            });
+            
+            // Parse bars as integer
+            let bars = parseInt(barsStr);
+            if (isNaN(bars) || bars <= 0) {
+                bars = 1; // Default to 1 if invalid
+            }
+            
+            // Parse rndLen as integer
+            let rndLen = parseInt(rndLenStr);
+            if (isNaN(rndLen) || rndLen <= 0) {
+                rndLen = 6; // Default to 6 if invalid
+            }
+            
+            // Generate drum exercise using JavaScript function
+            const exercise = generateDrumExercise(pattern, bars, strokes, flip, rndLen);
+            
+            // Display the result
+            const exerciseDiv = `
+                <div class="exercise-div">
+                    <h3>Drum Practice Exercise Generated!</h3>
+                    <p><strong>Bars:</strong> ${barsStr}</p>
+                    <p><strong>Pattern:</strong> ${pattern}</p>
+                    <p><strong>Strokes:</strong> ${formatStrokes(strokes)}</p>
+                    <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                        <h4 style="margin-top: 0; color: #495057;">Your Practice Exercise:</h4>
+                        <div class="exercise-display" id="exercise-display">${exercise}</div>
+                        <button class="copy-button" id="copy-exercise-btn" onclick="copyExercise()">📋 Copy Exercise</button>
+                    </div>
+                    <p><em>Each stroke represents one subdivision based on your selected structure. Start the metronome to practice!<br>The metronome begins with a preparation bar, then plays the exercise, with rest bars between cycles.<br><strong>Click on any stroke to cycle through different options (R → r → L → l → K)</strong></em></p>
+                </div>
+            `;
+            
+            document.getElementById('exercise-div').innerHTML = exerciseDiv;
+            
+            // Make strokes clickable after the exercise is loaded
+            makeStrokesClickable();
+        });
+        
+        // Stroke cycling functions
+        function makeStrokesClickable() {
+            const strokeSpans = document.querySelectorAll('[id^="stroke-"]');
+            strokeSpans.forEach(span => {
+                span.classList.add('stroke-span');
+                span.addEventListener('click', handleStrokeClick);
+            });
+        }
+        
+        function handleStrokeClick(event) {
+            const currentStroke = event.target.textContent;
+            const currentIndex = strokeCycle.indexOf(currentStroke);
+            const nextIndex = (currentIndex + 1) % strokeCycle.length;
+            const nextStroke = strokeCycle[nextIndex];
+            
+            // Update the span content and styling
+            updateStrokeDisplay(event.target, nextStroke);
+        }
+        
+        function updateStrokeDisplay(span, newStroke) {
+            span.textContent = newStroke;
+            
+            // Remove old stroke classes
+            span.className = span.className.replace(/stroke-[a-z-]+/g, '');
+            
+            // Add stroke-span class back and new stroke class
+            span.classList.add('stroke-span');
+            
+            switch(newStroke) {
+                case 'R': span.classList.add('stroke-r'); break;
+                case 'L': span.classList.add('stroke-l'); break;
+                case 'K': span.classList.add('stroke-k'); break;
+                case 'r': span.classList.add('stroke-r-lower'); break;
+                case 'l': span.classList.add('stroke-l-lower'); break;
+            }
+        }
+        
+        // Copy exercise function
+        function copyExercise() {
+            const exerciseDisplay = document.getElementById('exercise-display');
+            if (!exerciseDisplay) return;
+            
+            // Extract just the text content (without HTML tags)
+            const exerciseText = exerciseDisplay.textContent || exerciseDisplay.innerText;
+            
+            // Copy to clipboard
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(exerciseText).then(() => {
+                    showCopyFeedback();
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    fallbackCopyTextToClipboard(exerciseText);
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyTextToClipboard(exerciseText);
+            }
+        }
+        
+        // Fallback copy method for older browsers
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopyFeedback();
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // Show copy feedback
+        function showCopyFeedback() {
+            const copyButton = document.getElementById('copy-exercise-btn');
+            if (copyButton) {
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.classList.remove('copied');
+                }, 2000);
+            }
+        }
+        
+        // Initialize audio context
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        // Get current structure settings
+        function getStructureSettings() {
+            const structureSelect = document.getElementById('structure');
+            const structure = structureSelect.value;
+            
+            switch (structure) {
+                case 'crotchet':
+                    return {
+                        name: 'Crotchet',
+                        clicksPerBar: 4,
+                        subdivision: 1 // Quarter note divided by 1
+                    };
+                case 'quaver':
+                    return {
+                        name: 'Quaver',
+                        clicksPerBar: 8,
+                        subdivision: 2 // Quarter note divided by 2
+                    };
+                case 'semiquaver':
+                    return {
+                        name: 'Semiquaver', 
+                        clicksPerBar: 16,
+                        subdivision: 4 // Quarter note divided by 4
+                    };
+                default:
+                    return {
+                        name: 'Crotchet',
+                        clicksPerBar: 4,
+                        subdivision: 1
+                    };
+            }
+        }
+        
+        // Create click sound using Web Audio API
+        function playClick() {
+            initAudioContext();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Create a short, sharp click sound
+            oscillator.frequency.value = 800; // 800 Hz frequency
+            oscillator.type = 'sine';
+            
+            // Quick attack and decay for click sound
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+        
+        // Highlight stroke functions
+        function highlightStroke(index) {
+            // Remove previous highlights
+            const previouslyHighlighted = document.querySelector('.stroke-highlight');
+            if (previouslyHighlighted) {
+                previouslyHighlighted.classList.remove('stroke-highlight');
+            }
+            
+            // Add highlight to current stroke
+            const strokeElement = document.getElementById('stroke-' + index);
+            if (strokeElement) {
+                strokeElement.classList.add('stroke-highlight');
+            }
+        }
+        
+        function clearAllHighlights() {
+            const highlighted = document.querySelectorAll('.stroke-highlight');
+            highlighted.forEach(element => {
+                element.classList.remove('stroke-highlight');
+            });
+        }
+        
+        function updateTotalStrokes() {
+            // Count total strokes in the exercise
+            const exerciseDisplay = document.getElementById('exercise-display');
+            if (exerciseDisplay) {
+                const strokes = exerciseDisplay.querySelectorAll('[id^="stroke-"]');
+                totalStrokes = strokes.length;
+                // Re-make strokes clickable after counting (in case DOM was updated)
+                makeStrokesClickable();
+            } else {
+                totalStrokes = 0;
+            }
+        }
+        
+        // Play click and handle highlighting
+        function playClickAndHighlight() {
+            playClick();
+            
+            if (totalStrokes > 0) {
+                if (isPreparationBar) {
+                    // During preparation bar - no highlighting, just count clicks
+                    emptyBarClickCount++;
+                    updateStatusForPreparationBar();
+                    
+                    if (emptyBarClickCount > emptyBarClicksPerBar) {
+                        // Preparation bar complete, start exercise
+                        isPreparationBar = false;
+                        emptyBarClickCount = 0;
+                        currentStrokeIndex = 0;
+                        highlightStroke(currentStrokeIndex);
+                        currentStrokeIndex++;
+                        updateStatusForExercise();
+                        // Switch to exercise interval
+                        switchToExerciseInterval();
+                    }
+                } else if (isInEmptyBar) {
+                    // During rest bar - no highlighting, just count clicks
+                    emptyBarClickCount++;
+                    updateStatusForRestBar();
+                    
+                    if (emptyBarClickCount > emptyBarClicksPerBar) {
+                        // Rest bar complete, return to beginning of exercise
+                        isInEmptyBar = false;
+                        emptyBarClickCount = 0;
+                        currentStrokeIndex = 0;
+                        highlightStroke(currentStrokeIndex);
+                        currentStrokeIndex++;
+                        updateStatusForExercise();
+                        // Switch to exercise interval
+                        switchToExerciseInterval();
+                    }
+                } else {
+                    // Normal exercise highlighting
+                    highlightStroke(currentStrokeIndex);
+                    currentStrokeIndex++;
+                    
+                    // Check if we've completed the exercise
+                    if (currentStrokeIndex >= totalStrokes) {
+                        // Exercise complete, enter rest bar
+                        clearAllHighlights();
+                        isInEmptyBar = true;
+                        emptyBarClickCount = 0;
+                        updateStatusForRestBar();
+                        // Switch to empty bar interval
+                        switchToEmptyBarInterval();
+                    }
+                }
+            }
+        }
+        
+        // Switch to exercise interval (structure-based)
+        function switchToExerciseInterval() {
+            if (metronomeInterval) {
+                clearInterval(metronomeInterval);
+                const bpmInput = document.getElementById('bpm');
+                const bpm = parseInt(bpmInput.value);
+                const structureSettings = getStructureSettings();
+                const quarterNoteInterval = 60000 / bpm;
+                const subdivisionInterval = quarterNoteInterval / structureSettings.subdivision;
+                
+                metronomeInterval = setInterval(() => {
+                    playClickAndHighlight();
+                }, subdivisionInterval);
+            }
+        }
+        
+        // Switch to empty bar interval (quarter note based)
+        function switchToEmptyBarInterval() {
+            if (metronomeInterval) {
+                clearInterval(metronomeInterval);
+                const bpmInput = document.getElementById('bpm');
+                const bpm = parseInt(bpmInput.value);
+                const quarterNoteInterval = 60000 / bpm;
+                
+                metronomeInterval = setInterval(() => {
+                    playClickAndHighlight();
+                }, quarterNoteInterval);
+            }
+        }
+        
+        // Update status display for preparation bar
+        function updateStatusForPreparationBar() {
+            const bpmInput = document.getElementById('bpm');
+            const bpm = parseInt(bpmInput.value);
+            const statusText = 'Preparation bar (' + emptyBarClickCount + '/' + emptyBarClicksPerBar + ') - Get ready! Playing quarter notes at ' + bpm + ' BPM';
+            document.getElementById('metronome-status').textContent = statusText;
+        }
+        
+        // Update status display for rest bar
+        function updateStatusForRestBar() {
+            const bpmInput = document.getElementById('bpm');
+            const bpm = parseInt(bpmInput.value);
+            const statusText = 'Rest bar (' + emptyBarClickCount + '/' + emptyBarClicksPerBar + ') - Playing quarter notes at ' + bpm + ' BPM';
+            document.getElementById('metronome-status').textContent = statusText;
+        }
+        
+        // Update status display for exercise
+        function updateStatusForExercise() {
+            const bpmInput = document.getElementById('bpm');
+            const bpm = parseInt(bpmInput.value);
+            const structureSettings = getStructureSettings();
+            const clicksPerMinute = Math.round(bpm * structureSettings.subdivision);
+            const statusText = 'Playing ' + structureSettings.name.toLowerCase() + 's at ' + bpm + ' BPM (' + clicksPerMinute + ' clicks/min)';
+            document.getElementById('metronome-status').textContent = statusText;
+        }
+        
+        // Start metronome
+        function startMetronome() {
+            if (isPlaying) return;
+            
+            initAudioContext();
+            
+            // Resume audio context if it's suspended (required by some browsers)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            // Get BPM from input field
+            const bpmInput = document.getElementById('bpm');
+            const bpm = parseInt(bpmInput.value);
+            
+            // Validate BPM range
+            if (bpm < 30 || bpm > 250 || isNaN(bpm)) {
+                alert('Please enter a valid BPM between 30 and 250');
+                return;
+            }
+            
+            // Get structure settings and calculate intervals
+            const structureSettings = getStructureSettings();
+            clicksPerBar = structureSettings.clicksPerBar;
+            
+            // BPM is quarter notes, calculate intervals
+            const quarterNoteInterval = 60000 / bpm; // Quarter note interval in ms
+            
+            isPlaying = true;
+            
+            // Initialize highlighting system with preparation bar
+            updateTotalStrokes();
+            currentStrokeIndex = 0;
+            isInEmptyBar = false;
+            isPreparationBar = true;
+            emptyBarClickCount = 0;
+            
+            // Set initial status for preparation
+            updateStatusForPreparationBar();
+            
+            // Play first click of preparation bar
+            playClickAndHighlight();
+            
+            // Start interval for subsequent clicks (quarter note interval for preparation bar)
+            metronomeInterval = setInterval(() => {
+                playClickAndHighlight();
+            }, quarterNoteInterval);
+        }
+        
+        // Stop metronome
+        function stopMetronome() {
+            if (!isPlaying) return;
+            
+            isPlaying = false;
+            
+            if (metronomeInterval) {
+                clearInterval(metronomeInterval);
+                metronomeInterval = null;
+            }
+            
+            // Clear all highlights and reset state
+            clearAllHighlights();
+            currentStrokeIndex = 0;
+            isInEmptyBar = false;
+            isPreparationBar = false;
+            emptyBarClickCount = 0;
+            
+            document.getElementById('metronome-status').textContent = 'Stopped';
+        }
+        
+        // Handle BPM input change while metronome is playing
+        function handleBPMChange() {
+            if (isPlaying) {
+                // Update the interval based on current state
+                if (isPreparationBar || isInEmptyBar) {
+                    // In empty bar - use quarter note interval
+                    switchToEmptyBarInterval();
+                } else {
+                    // In exercise - use structure-based interval
+                    switchToExerciseInterval();
+                }
+            }
+        }
+        
+        // Handle structure change while metronome is playing
+        function handleStructureChange() {
+            if (isPlaying) {
+                // Update structure settings
+                const structureSettings = getStructureSettings();
+                clicksPerBar = structureSettings.clicksPerBar;
+                
+                // If we're in exercise mode, update the interval
+                if (!isPreparationBar && !isInEmptyBar) {
+                    switchToExerciseInterval();
+                }
+                // If we're in empty bar mode, no need to change interval as it's always quarter notes
+            }
+        }
+        
+        // Add event listeners for input changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const bpmInput = document.getElementById('bpm');
+            const structureSelect = document.getElementById('structure');
+            
+            bpmInput.addEventListener('input', handleBPMChange);
+            structureSelect.addEventListener('change', handleStructureChange);
+        });
+        
+        // Handle metronome with keyboard (spacebar)
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                event.preventDefault(); // Prevent page scroll
+                if (!isPlaying) {
+                    startMetronome();
+                } else {
+                    stopMetronome();
+                }
+            }
+        });
+        
+        // Handle page visibility change (stop metronome when tab is hidden)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && isPlaying) {
+                stopMetronome();
+            }
+        });
+
+        // ===== PATTERN GENERATION FUNCTIONS =====
+        
+        // JavaScript version of generateRandomPattern
+        function generateRandomPattern(rndLen, availableStrokes, flip) {
+            let bar = "";
+            
+            // Generate random pattern of specified length
+            for (let i = 0; i < rndLen; i++) {
+                const randomStroke = availableStrokes[Math.floor(Math.random() * availableStrokes.length)];
+                bar += randomStroke;
+            }
+            
+            if (flip) {
+                // Duplicate the random pattern and flip R, r <-> L, l. keep K or any other character unchanged.
+                const copy = bar;
+                for (const c of copy) {
+                    if (c === 'R') {
+                        bar += 'L';
+                    } else if (c === 'L') {
+                        bar += 'R';
+                    } else if (c === 'r') {
+                        bar += 'l';
+                    } else if (c === 'l') {
+                        bar += 'r';
+                    } else {
+                        bar += c;
+                    }
+                }
+            }
+            
+            return bar;
+        }
+        
+        // JavaScript version of generateDrumExercise
+        function generateDrumExercise(pattern, bars, strokes, flip, rndLen) {
+            // Define default strokes R and L if none selected
+            let availableStrokes = strokes;
+            if (availableStrokes.length === 0) {
+                availableStrokes = ["R", "L"];
+            }
+            
+            let bar = "";
+            
+            switch (pattern) {
+                case "paradiddle":
+                    bar = "RLRRLRLL";
+                    break;
+                case "paradiddle-left":
+                    bar = "LRLLRLRR";
+                    break;
+                case "double-paradiddle":
+                    bar = "RLRLRRLRLRLL";
+                    break;
+                case "single-beat":
+                    bar = "RLRLRLRL";
+                    break;
+                case "single-beat-left":
+                    bar = "LRLRLRLR";
+                    break;
+                case "random":
+                    bar = generateRandomPattern(rndLen, availableStrokes, flip);
+                    break;
+                default:
+                    // Same as random just to be sure we create something
+                    bar = generateRandomPattern(rndLen, availableStrokes, flip);
+                    break;
+            }
+            
+            // Repeat pattern for the number of bars and add color coding + IDs for highlighting
+            let result = "";
+            let strokeIndex = 0;
+            
+            for (let i = 0; i < bars; i++) {
+                // Color-code each stroke in the pattern and add unique IDs
+                for (const stroke of bar) {
+                    switch (stroke) {
+                        case "R":
+                            result += `<span class="stroke-r" id="stroke-${strokeIndex}">R</span>`;
+                            break;
+                        case "L":
+                            result += `<span class="stroke-l" id="stroke-${strokeIndex}">L</span>`;
+                            break;
+                        case "K":
+                            result += `<span class="stroke-k" id="stroke-${strokeIndex}">K</span>`;
+                            break;
+                        case "r":
+                            result += `<span class="stroke-r-lower" id="stroke-${strokeIndex}">r</span>`;
+                            break;
+                        case "l":
+                            result += `<span class="stroke-l-lower" id="stroke-${strokeIndex}">l</span>`;
+                            break;
+                        default:
+                            result += `<span id="stroke-${strokeIndex}">${stroke}</span>`;
+                            break;
+                    }
+                    strokeIndex++;
+                }
+                if (i < bars - 1) {
+                    result += " "; // Add space between bars
+                }
+            }
+            
+            return result;
+        }
+        
+        // JavaScript version of formatStrokes (for display purposes)
+        function formatStrokes(strokes) {
+            if (strokes.length === 0) {
+                return "None selected";
+            }
+            
+            let result = "";
+            for (let i = 0; i < strokes.length; i++) {
+                if (i > 0) {
+                    result += ", ";
+                }
+                const stroke = strokes[i];
+                switch (stroke) {
+                    case "R":
+                        result += `<span class="stroke-r">R</span>`;
+                        break;
+                    case "L":
+                        result += `<span class="stroke-l">L</span>`;
+                        break;
+                    case "K":
+                        result += `<span class="stroke-k">K</span>`;
+                        break;
+                    case "r":
+                        result += `<span class="stroke-r-lower">r</span>`;
+                        break;
+                    case "l":
+                        result += `<span class="stroke-l-lower">l</span>`;
+                        break;
+                    default:
+                        result += stroke;
+                        break;
+                }
+            }
+            return result;
+        }
+    </script>
+</body>
+</html> 
