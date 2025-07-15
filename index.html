@@ -20,10 +20,10 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="input">Pattern:</label>
-                    <select id="input" name="pattern" required>
+                    <select id="input" name="pattern" required onchange="togglePatternConfig(this)">
                         <option value="">Select an option...</option>
-                        <option value="random">Random</option>
-                        <option value="paradiddle" selected>Paradiddle</option>
+                        <option value="random" selected>Random</option>
+                        <option value="paradiddle">Paradiddle</option>
                         <option value="paradiddle-left">Paradiddle Left</option>
                         <option value="double-paradiddle">Double Paradiddle</option>
                         <option value="single-beat">Single Beat</option>
@@ -38,46 +38,47 @@
             </div>
             
             <!-- Second row: Strokes -->
-            <div class="form-row strokes-row">
-                <div class="form-group">
-                    <label>Strokes:</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="r" name="strokes" value="R" checked>
-                            <label for="r" class="stroke-r">R</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="r-lower" name="strokes" value="r">
-                            <label for="r-lower" class="stroke-r-lower">r</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="l" name="strokes" value="L" checked>
-                            <label for="l" class="stroke-l">L</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="l-lower" name="strokes" value="l">
-                            <label for="l-lower" class="stroke-l-lower">l</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="k" name="strokes" value="K">
-                            <label for="k" class="stroke-k">K</label>
+            <div id="pattern-config">
+                <div class="form-row strokes-row">
+                    <div class="form-group">
+                        <label>Strokes:</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="r" name="strokes" value="R" checked>
+                                <label for="r" class="stroke-r">R</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="r-lower" name="strokes" value="r">
+                                <label for="r-lower" class="stroke-r-lower">r</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="l" name="strokes" value="L" checked>
+                                <label for="l" class="stroke-l">L</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="l-lower" name="strokes" value="l">
+                                <label for="l-lower" class="stroke-l-lower">l</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="k" name="strokes" value="K">
+                                <label for="k" class="stroke-k">K</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="checkbox-item">
-                <label for="flip">Duplicate and flip the pattern: </label>
-                <input type="checkbox" id="flip" name="flip" value="true" checked>
-            </div>
-            <!-- Third row: Random Bar length -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="rnd_len">Random bar length:</label>
-                    <input type="text" id="rnd-len" name="rnd_len" value="6" required>
+
+                <div class="checkbox-item">
+                    <label for="flip">Duplicate and flip the pattern: </label>
+                    <input type="checkbox" id="flip" name="flip" value="true" checked>
+                </div>
+                <!-- Third row: Random Bar length -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rnd_len">Random bar length:</label>
+                        <input type="text" id="rnd-len" name="rnd_len" value="6" required>
+                    </div>
                 </div>
             </div>
-            
             <button type="submit" class="submit-btn">Generate Exercise</button>
         </form>
         
@@ -109,7 +110,7 @@
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-item">
-                    v.0.0.2
+                    v.0.0.3
                 </div>
                 <div class="footer-item">
                     <strong>Authors:</strong> Fynardo & Claude
@@ -199,6 +200,16 @@
             makeStrokesClickable();
         });
         
+        // Show random pattern config only when random is selected
+        function togglePatternConfig(select) {
+            const patternConfig = document.getElementById('pattern-config');
+            if (select.value === 'random') {
+                patternConfig.style.display = 'block';
+            } else {
+                patternConfig.style.display = 'none';
+            }
+        }
+
         // Stroke cycling functions
         function makeStrokesClickable() {
             const strokeSpans = document.querySelectorAll('[id^="stroke-"]');
