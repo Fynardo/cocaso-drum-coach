@@ -31,6 +31,7 @@
     --stroke-r: #dc3545;
     --stroke-l: #0d6efd;
     --stroke-k: #198754;
+    --stroke-m: #404040;
     
     --shadow-light: rgba(0,0,0,0.1);
     --shadow-medium: rgba(0,0,0,0.2);
@@ -69,6 +70,7 @@
     --stroke-r: #ff6b6b;
     --stroke-l: #4dabf7;
     --stroke-k: #51cf66;
+    --stroke-m: #404040;
     
     --shadow-light: rgba(0,0,0,0.3);
     --shadow-medium: rgba(0,0,0,0.4);
@@ -198,6 +200,11 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
 
 .stroke-k {
     color: var(--stroke-k);
+    font-weight: bold;
+}
+
+.stroke-m {
+    color: var(--stroke-m);
     font-weight: bold;
 }
 

@@ -63,6 +63,10 @@
                                 <input type="checkbox" id="k" name="strokes" value="K">
                                 <label for="k" class="stroke-k">K</label>
                             </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="m" name="strokes" value="M">
+                                <label for="m" class="stroke-M">M (mute)</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -143,7 +147,7 @@
         let emptyBarClicksPerBar = 4; // Quarter notes for empty bars
         
         // Stroke cycling variables
-        const strokeCycle = ['R', 'r', 'L', 'l', 'K'];
+        const strokeCycle = ['R', 'r', 'L', 'l', 'K', '-'];
         
         // Form submission handler
         document.getElementById('exercise-form').addEventListener('submit', function(e) {
@@ -190,7 +194,7 @@
                         <div class="exercise-display" id="exercise-display">${exercise}</div>
                         <button class="copy-button" id="copy-exercise-btn" onclick="copyExercise()">📋 Copy Exercise</button>
                     </div>
-                    <p><em>Each stroke represents one subdivision based on your selected structure. Start the metronome to practice!<br>The metronome begins with a preparation bar, then plays the exercise, with rest bars between cycles.<br><strong>Click on any stroke to cycle through different options (R → r → L → l → K)</strong></em></p>
+                    <p><em>Each stroke represents one subdivision based on your selected structure. Start the metronome to practice!<br>The metronome begins with a preparation bar, then plays the exercise, with rest bars between cycles.<br><strong>Click on any stroke to cycle through different options (R → r → L → l → K → M)</strong></em></p>
                 </div>
             `;
             
@@ -244,6 +248,7 @@
                 case 'K': span.classList.add('stroke-k'); break;
                 case 'r': span.classList.add('stroke-r-lower'); break;
                 case 'l': span.classList.add('stroke-l-lower'); break;
+                case 'M': span.classList.add('stroke-m'); break;
             }
         }
         
@@ -730,6 +735,9 @@
                         case "l":
                             result += `<span class="stroke-l-lower" id="stroke-${strokeIndex}">l</span>`;
                             break;
+                        case "M":
+                            result += `<span class="stroke-m" id="stroke-${strokeIndex}">-</span>`;
+                            break;
                         default:
                             result += `<span id="stroke-${strokeIndex}">${stroke}</span>`;
                             break;
@@ -771,6 +779,9 @@
                         break;
                     case "l":
                         result += `<span class="stroke-l-lower">l</span>`;
+                        break;
+                    case "M":
+                        result += `<span class="stroke-m">-</span>`;
                         break;
                     default:
                         result += stroke;
