@@ -36,6 +36,17 @@
                     <input type="text" id="bars" name="bars" value="8" required>
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pattern-tempo">Pattern tempo:</label>
+                    <select id="pattern-tempo" name="pattern_tempo" required>
+                        <option value="crotchet" selected>Crotchet (♩)</option>
+                        <option value="quaver">Quaver (♪)</option>
+                        <option value="semiquaver">Semiquaver (♬)</option>
+                    </select>
+                    <small style="color: #666;">Note value that each stroke represents</small>
+                </div>
+            </div>
             
             <!-- Second row: Strokes -->
             <div id="pattern-config">
@@ -93,11 +104,19 @@
                 <input type="number" id="bpm" name="bpm" value="100" min="30" max="250" required>
             </div>
             <div class="form-group">
+                <label for="time-signature">Time Signature:</label>
+                <select id="time-signature" name="time_signature" required>
+                    <option value="3/4">3/4</option>
+                    <option value="4/4" selected>4/4</option>
+                </select>
+                <small style="color: #666;">Choose the time signature for your practice</small>
+            </div>
+            <div class="form-group">
                 <label for="structure">Structure:</label>
                 <select id="structure" name="structure" required>
-                    <option value="crotchet">Crotchet (4 clicks per bar)</option>
-                    <option value="quaver">Quaver (8 clicks per bar)</option>
-                    <option value="semiquaver">Semiquaver (16 clicks per bar)</option>
+                    <option value="crotchet">Crotchet (♩)</option>
+                    <option value="quaver">Quaver (♪)</option>
+                    <option value="semiquaver">Semiquaver (♬)</option>
                 </select>
                 <small style="color: #666;">Choose the subdivision structure for your practice<br>Starts with a preparation bar, then exercise, then rest bars between cycles</small>
             </div>
@@ -114,7 +133,7 @@
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-item">
-                    v.0.0.3
+                    v.0.0.4
                 </div>
                 <div class="footer-item">
                     <strong>Authors:</strong> Fynardo & Claude
@@ -143,8 +162,8 @@
         let isInEmptyBar = false;
         let emptyBarClickCount = 0;
         let isPreparationBar = false;
-        let clicksPerBar = 4; // Default to crotchet
-        let emptyBarClicksPerBar = 4; // Quarter notes for empty bars
+        let clicksPerBar = 4; // Will be set dynamically based on time-signature and structure
+        let emptyBarClicksPerBar = 4; // Will be set dynamically based on time-signature (quarter notes only)
         
         // Stroke cycling variables
         const strokeCycle = ['R', 'r', 'L', 'l', 'K', '-'];
@@ -314,6 +333,30 @@
             }
         }
         
+        // Get current time-signature settings (time signature)
+        function getTimeSignatureSettings() {
+            const timeSignatureSelect = document.getElementById('time-signature');
+            const timeSignature = timeSignatureSelect.value;
+
+            switch (timeSignature) {
+                case '4/4':
+                    return {
+                        name: '4/4',
+                        beatsPerBar: 4
+                    };
+                case '3/4':
+                    return {
+                        name: '3/4',
+                        beatsPerBar: 3
+                    };
+                default:
+                    return {
+                        name: '4/4',
+                        beatsPerBar: 4
+                    };
+            }
+        }
+
         // Get current structure settings
         function getStructureSettings() {
             const structureSelect = document.getElementById('structure');
@@ -323,30 +366,78 @@
                 case 'crotchet':
                     return {
                         name: 'Crotchet',
-                        clicksPerBar: 4,
                         subdivision: 1 // Quarter note divided by 1
                     };
                 case 'quaver':
                     return {
                         name: 'Quaver',
-                        clicksPerBar: 8,
                         subdivision: 2 // Quarter note divided by 2
                     };
                 case 'semiquaver':
                     return {
                         name: 'Semiquaver', 
-                        clicksPerBar: 16,
                         subdivision: 4 // Quarter note divided by 4
                     };
                 default:
                     return {
                         name: 'Crotchet',
-                        clicksPerBar: 4,
                         subdivision: 1
                     };
             }
         }
         
+        // Get current pattern tempo settings
+        function getPatternTempoSettings() {
+            const patternTempoSelect = document.getElementById('pattern-tempo');
+            const patternTempo = patternTempoSelect.value;
+
+            switch (patternTempo) {
+                case 'crotchet':
+                    return {
+                        name: 'Crotchet',
+                        subdivision: 1 // Quarter note
+                    };
+                case 'quaver':
+                    return {
+                        name: 'Quaver',
+                        subdivision: 2 // Eighth note
+                    };
+                case 'semiquaver':
+                    return {
+                        name: 'Semiquaver',
+                        subdivision: 4 // Sixteenth note
+                    };
+                default:
+                    return {
+                        name: 'Crotchet',
+                        subdivision: 1
+                    };
+            }
+        }
+
+        // Calculate stroke step based on metronome structure vs pattern tempo
+        function calculateStrokeStep() {
+            const metronomeStructure = getStructureSettings();
+            const patternTempo = getPatternTempoSettings();
+
+            // Calculate the ratio between metronome clicks and pattern strokes
+            // metronomeStructure.subdivision represents clicks per quarter note
+            // patternTempo.subdivision represents strokes per quarter note
+            const ratio = patternTempo.subdivision / metronomeStructure.subdivision;
+
+            // For now, we'll work with simple integer ratios
+            // If ratio >= 1: highlight every ratio-th stroke
+            // If ratio < 1: we need to handle sub-divisions differently
+            return Math.max(1, Math.round(ratio));
+        }
+
+        // Calculate clicks per bar based on timeSignature and structure
+        function getClicksPerBar() {
+            const timeSignatureSettings = getTimeSignatureSettings();
+            const structureSettings = getStructureSettings();
+            return timeSignatureSettings.beatsPerBar * structureSettings.subdivision;
+        }
+
         // Create click sound using Web Audio API
         function playClick() {
             initAudioContext();
@@ -421,7 +512,8 @@
                         emptyBarClickCount = 0;
                         currentStrokeIndex = 0;
                         highlightStroke(currentStrokeIndex);
-                        currentStrokeIndex++;
+                        currentStrokeIndex += calculateStrokeStep();
+
                         updateStatusForExercise();
                         // Switch to exercise interval
                         switchToExerciseInterval();
@@ -430,29 +522,29 @@
                     // During rest bar - no highlighting, just count clicks
                     emptyBarClickCount++;
                     updateStatusForRestBar();
-                    
+
                     if (emptyBarClickCount > emptyBarClicksPerBar) {
                         // Rest bar complete, return to beginning of exercise
                         isInEmptyBar = false;
                         emptyBarClickCount = 0;
                         currentStrokeIndex = 0;
                         highlightStroke(currentStrokeIndex);
-                        currentStrokeIndex++;
+                        currentStrokeIndex += calculateStrokeStep();
                         updateStatusForExercise();
                         // Switch to exercise interval
                         switchToExerciseInterval();
                     }
                 } else {
-                    // Normal exercise highlighting
+                    // Normal exercise highlighting with dynamic stroke step
                     highlightStroke(currentStrokeIndex);
-                    currentStrokeIndex++;
+                    currentStrokeIndex += calculateStrokeStep();
                     
                     // Check if we've completed the exercise
-                    if (currentStrokeIndex >= totalStrokes) {
+                    if (currentStrokeIndex > totalStrokes) {
                         // Exercise complete, enter rest bar
                         clearAllHighlights();
                         isInEmptyBar = true;
-                        emptyBarClickCount = 0;
+                        emptyBarClickCount = 1;
                         updateStatusForRestBar();
                         // Switch to empty bar interval
                         switchToEmptyBarInterval();
@@ -495,7 +587,8 @@
         function updateStatusForPreparationBar() {
             const bpmInput = document.getElementById('bpm');
             const bpm = parseInt(bpmInput.value);
-            const statusText = 'Preparation bar (' + emptyBarClickCount + '/' + emptyBarClicksPerBar + ') - Get ready! Playing quarter notes at ' + bpm + ' BPM';
+            const timeSignatureSettings = getTimeSignatureSettings();
+            const statusText = 'Preparation bar (' + emptyBarClickCount + '/' + emptyBarClicksPerBar + ') - Get ready! Playing quarter notes in ' + timeSignatureSettings.name + ' at ' + bpm + ' BPM';
             document.getElementById('metronome-status').textContent = statusText;
         }
         
@@ -503,7 +596,8 @@
         function updateStatusForRestBar() {
             const bpmInput = document.getElementById('bpm');
             const bpm = parseInt(bpmInput.value);
-            const statusText = 'Rest bar (' + emptyBarClickCount + '/' + emptyBarClicksPerBar + ') - Playing quarter notes at ' + bpm + ' BPM';
+            const timeSignatureSettings = getTimeSignatureSettings();
+            const statusText = 'Rest bar (' + emptyBarClickCount + '/' + emptyBarClicksPerBar + ') - Playing quarter notes in ' + timeSignatureSettings.name + ' at ' + bpm + ' BPM';
             document.getElementById('metronome-status').textContent = statusText;
         }
         
@@ -512,8 +606,11 @@
             const bpmInput = document.getElementById('bpm');
             const bpm = parseInt(bpmInput.value);
             const structureSettings = getStructureSettings();
+            const timeSignatureSettings = getTimeSignatureSettings();
+            const patternTempoSettings = getPatternTempoSettings();
+            const strokeStep = calculateStrokeStep();
             const clicksPerMinute = Math.round(bpm * structureSettings.subdivision);
-            const statusText = 'Playing ' + structureSettings.name.toLowerCase() + 's at ' + bpm + ' BPM (' + clicksPerMinute + ' clicks/min)';
+            const statusText = 'Playing ' + structureSettings.name.toLowerCase() + 's in ' + timeSignatureSettings.name + ' at ' + bpm + ' BPM (' + clicksPerMinute + ' clicks/min) | Pattern: ' + patternTempoSettings.name.toLowerCase() + 's (step: ' + strokeStep + ')';
             document.getElementById('metronome-status').textContent = statusText;
         }
         
@@ -540,7 +637,10 @@
             
             // Get structure settings and calculate intervals
             const structureSettings = getStructureSettings();
-            clicksPerBar = structureSettings.clicksPerBar;
+            const timeSignatureSettings = getTimeSignatureSettings();
+            clicksPerBar = getClicksPerBar();
+            console.log(clicksPerBar);
+            emptyBarClicksPerBar = timeSignatureSettings.beatsPerBar;
             
             // BPM is quarter notes, calculate intervals
             const quarterNoteInterval = 60000 / bpm; // Quarter note interval in ms
@@ -606,23 +706,59 @@
             if (isPlaying) {
                 // Update structure settings
                 const structureSettings = getStructureSettings();
-                clicksPerBar = structureSettings.clicksPerBar;
+                const timeSignatureSettings = getTimeSignatureSettings();
+                clicksPerBar = getClicksPerBar();
+                emptyBarClicksPerBar = timeSignatureSettings.beatsPerBar;
                 
                 // If we're in exercise mode, update the interval
                 if (!isPreparationBar && !isInEmptyBar) {
                     switchToExerciseInterval();
                 }
-                // If we're in empty bar mode, no need to change interval as it's always quarter notes
+                // If we're in empty bar mode, need to update the interval since timeSignature affects it
+                if (isInEmptyBar || isPreparationBar) {
+                    switchToEmptyBarInterval();
+                }
             }
+        }
+        
+        // Handle timeSignature change while metronome is playing
+        function handleTimeSignatureChange() {
+            if (isPlaying) {
+                // Update timeSignature and structure settings
+                const structureSettings = getStructureSettings();
+                const timeSignatureSettings = getTimeSignatureSettings();
+                clicksPerBar = getClicksPerBar();
+                emptyBarClicksPerBar = timeSignatureSettings.beatsPerBar;
+                
+                // Update the interval based on current state
+                if (isPreparationBar || isInEmptyBar) {
+                    // In empty bar - use quarter note interval
+                    switchToEmptyBarInterval();
+                } else {
+                    // In exercise - use structure-based interval
+                    switchToExerciseInterval();
+                }
+            }
+        }
+        
+        // Handle pattern tempo change while metronome is playing
+        function handlePatternTempoChange() {
+            // Pattern tempo changes don't affect the metronome timing,
+            // only the stroke step calculation for highlighting
+            // No need to update intervals, just the highlighting logic will adapt automatically
         }
         
         // Add event listeners for input changes
         function setupEventListeners() {
             const bpmInput = document.getElementById('bpm');
             const structureSelect = document.getElementById('structure');
+            const timeSignatureSelect = document.getElementById('time-signature');
+            const patternTempoSelect = document.getElementById('pattern-tempo');
             
             bpmInput.addEventListener('input', handleBPMChange);
             structureSelect.addEventListener('change', handleStructureChange);
+            timeSignatureSelect.addEventListener('change', handleTimeSignatureChange);
+            patternTempoSelect.addEventListener('change', handlePatternTempoChange);
         }
         
         // Handle metronome with keyboard (spacebar)

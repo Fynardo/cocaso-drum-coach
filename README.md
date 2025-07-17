@@ -23,7 +23,7 @@ Built with **good old plain HTML, JavaScript, and CSS** - no frameworks or exter
 ### 🥁 Pattern Generation
 - **Predefined Patterns**: Paradiddle, Paradiddle Left, Double Paradiddle, Single Beat, Single Beat Left
 - **Random Pattern Generator**: Create custom patterns with configurable length
-- **Stroke Types**: Support for R (Right), L (Left), K (Kick), r (right ghost), l (left ghost)
+- **Stroke Types**: Support for R (Right), L (Left), K (Kick), r (right ghost), l (left ghost), - (Mute, no stroke)
 - **Pattern Flipping**: Duplicate and automatically flip patterns (R↔L, r↔l)
 - **Interactive Strokes**: Click on any stroke to cycle through different options
 
@@ -90,7 +90,7 @@ cocaso-drum-coach/
 
 ## Version
 
-v.0.0.3
+v.0.0.4
 
 ---
 
