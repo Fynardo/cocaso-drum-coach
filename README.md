@@ -61,9 +61,10 @@ Works on **any device** as long as it runs basic JavaScript, including:
 
 ## Getting Started
 
-1. **Open**: Head to https://fynardo.github.io/cocaso-drum-coach/ or download the files and open `index.html` in any web browser.
+1. **Open**: Head to https://fynardo.github.io/cocaso-drum-coach/ in any web browser.
 2. **Practice**: Generate patterns and start practicing with the metronome!
 3. That's it
+
 
 ## Usage
 
@@ -77,10 +78,13 @@ Works on **any device** as long as it runs basic JavaScript, including:
 
 ```
 cocaso-drum-coach/
-├── index.html          # Main application file
-├── style.css           # Styling and layout
-└── README.md          # This file
-└── LICENSE          # MIT License file
+├── index.html           # Main HTML file
+├── style.css            # Main stylesheet
+├── main.js              # App logic and UI handlers
+├── exercise.js          # Exercise generation logic
+├── metronome.js         # Metronome engine
+├── theme.js             # Theme switching logic
+└── README.md            # This file
 ```
 
 ## Authors
@@ -90,7 +94,7 @@ cocaso-drum-coach/
 
 ## Version
 
-v.0.0.4
+v.0.0.5
 
 ---
 
