@@ -1,7 +1,7 @@
 export const exerciseRepository = {
     // More complex exercises are defined using a custom syntax.
-    basic1: {display: "Basic 1", pattern: "4(Rrr-) 4(Lll-) 4(Rrr-) 2(Lll-) 2(LlRr)"},
-    basic2: {display: "Basic 2", pattern: "7(R-llL-rr) 2(RlLr)"},
+    basic1: {display: "Basic 1", pattern: "4(Rrr-) 4(Lll-) 4(Rrr-) 2(Lll-) 2(LlRr)", tempo: "quaver"},
+    basic2: {display: "Basic 2", pattern: "7(R-llL-rr) 2(RlLr)", tempo: "quaver"},
 }
 
 export const patternRepository = {
