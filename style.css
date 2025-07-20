@@ -101,6 +101,65 @@ h1 {
     margin-bottom: 30px;
 }
 
+.tab-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+    border-bottom: 2px solid var(--border-primary);
+}
+
+.tab-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 12px 30px;
+    border: 2px solid var(--border-primary);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 2px;
+    position: relative;
+    transition: all 0.3s ease;
+    top: 2px;
+}
+
+.tab-button:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.tab-button:last-child {
+    margin-right: 0;
+}
+
+.selected-tab {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-primary);
+    top: 2px;
+    z-index: 1;
+}
+
+.selected-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--bg-secondary);
+}
+
+.exercise-tab {
+    border: 2px solid var(--border-primary);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+    background-color: var(--bg-secondary);
+}
+
+
 .form-group {
     margin-bottom: 20px;
 }

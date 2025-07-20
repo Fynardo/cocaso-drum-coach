@@ -16,89 +16,104 @@
     <div class="container">
         <h1>Cocaso Drum Coach</h1>
         
-        <form id="exercise-form">
-            <!-- First row: Pattern and Bars -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="input">Pattern:</label>
-                    <select id="input" name="pattern" required onchange="togglePatternConfig(this)">
-                        <option value="">Select an option...</option>
-                        <option value="random" selected>Random</option>
-                        <option value="doubles">Doubles</option>
-                        <option value="doubles-left">Doubles - Left</option>
-                        <option value="paradiddle">Paradiddle</option>
-                        <option value="paradiddle-double">Paradiddle - Double</option>
-                        <option value="paradiddle-left">Paradiddle Left</option>
-                        <option value="singles">Singles</option>
-                        <option value="singles-left">Singles - Left</option>
-                    </select>
+        <div class="tab-buttons">
+            <button class="tab-button selected-tab" id="one-bar-pattern-tab-button" onclick="switchTab('one-bar-pattern-tab')">1 Bar Patterns</button>
+            <button class="tab-button" id="multi-bar-pattern-tab-button" onclick="switchTab('multi-bar-pattern-tab')">Multi Bar Exercises</button>            
+        </div>
+          
+        <div id="one-bar-pattern-tab" class="exercise-tab">
+            <h2>1 Bar Pattern Exercises</h2>
+            <form id="1-bar-pattern-exercise-form">
+                <!-- First row: Pattern and Bars -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pattern-select">Pattern:</label>
+                        <select id="pattern-select" name="pattern" required onchange="togglePatternConfig(this)">
+                            <option value="">Select an option...</option>
+                            <option value="random" selected>Random</option>
+                            <!-- Dynamically populated by patternRepository -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bars">Bars:</label>
+                        <input type="text" id="bars" name="bars" value="8" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pattern-tempo">Pattern tempo:</label>
+                        <select id="pattern-tempo" name="pattern_tempo" required>
+                            <option value="crotchet">Crotchet (♩)</option>
+                            <option value="quaver" selected>Quaver (♪)</option>
+                            <option value="semiquaver">Semiquaver (♬)</option>
+                        </select>
+                        <small style="color: #666;">Note value that each stroke represents</small>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="bars">Bars:</label>
-                    <input type="text" id="bars" name="bars" value="8" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="pattern-tempo">Pattern tempo:</label>
-                    <select id="pattern-tempo" name="pattern_tempo" required>
-                        <option value="crotchet">Crotchet (♩)</option>
-                        <option value="quaver" selected>Quaver (♪)</option>
-                        <option value="semiquaver">Semiquaver (♬)</option>
-                    </select>
-                    <small style="color: #666;">Note value that each stroke represents</small>
-                </div>
-            </div>
-            
-            <!-- Second row: Strokes -->
-            <div id="pattern-config">
-                <div class="form-row strokes-row">
-                    <div class="form-group">
-                        <label>Strokes:</label>
-                        <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="r" name="strokes" value="R" checked>
-                                <label for="r" class="stroke-r">R</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="r-lower" name="strokes" value="r">
-                                <label for="r-lower" class="stroke-r-lower">r</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="l" name="strokes" value="L" checked>
-                                <label for="l" class="stroke-l">L</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="l-lower" name="strokes" value="l">
-                                <label for="l-lower" class="stroke-l-lower">l</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="k" name="strokes" value="K">
-                                <label for="k" class="stroke-k">K</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="m" name="strokes" value="M">
-                                <label for="m" class="stroke-M">M (mute)</label>
+                <!-- Second row: Strokes -->
+                <div id="pattern-config">
+                    <div class="form-row strokes-row">
+                        <div class="form-group">
+                            <label>Strokes:</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="r" name="strokes" value="R" checked>
+                                    <label for="r" class="stroke-r">R</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="r-lower" name="strokes" value="r">
+                                    <label for="r-lower" class="stroke-r-lower">r</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="l" name="strokes" value="L" checked>
+                                    <label for="l" class="stroke-l">L</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="l-lower" name="strokes" value="l">
+                                    <label for="l-lower" class="stroke-l-lower">l</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="k" name="strokes" value="K">
+                                    <label for="k" class="stroke-k">K</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="m" name="strokes" value="-">
+                                    <label for="m" class="stroke-M">M (mute)</label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="checkbox-item">
-                    <label for="flip">Duplicate and flip the pattern: </label>
-                    <input type="checkbox" id="flip" name="flip" value="true" checked>
-                </div>
-                <!-- Third row: Random Bar length -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="rnd_len">Random bar length:</label>
-                        <input type="text" id="rnd-len" name="rnd_len" value="6" required>
+    
+                    <div class="checkbox-item">
+                        <label for="flip">Duplicate and flip the pattern: </label>
+                        <input type="checkbox" id="flip" name="flip" value="true" checked>
+                    </div>
+                    <!-- Third row: Random Bar length -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rnd_len">Random bar length:</label>
+                            <input type="text" id="rnd-len" name="rnd_len" value="6" required>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <button type="submit" class="submit-btn">Generate Exercise</button>
-        </form>
+                <button type="submit" class="submit-btn">Generate Exercise</button>
+            </form>
+        </div>
+
+        <div id="multi-bar-pattern-tab" class="exercise-tab" style="display: none;">
+            <h2>Multi Bar Exercises</h2>
+
+            <form id="multi-bar-pattern-exercise-form">
+                <label for="exercises-select">Exercise:</label>
+                <select id="exercises-select" name="exercises" required>
+                    <option value="">Select an option...</option>
+                    <!-- Dynamically populated by patternRepository -->
+                </select>
+                <button type="submit" class="submit-btn">Load Demo Exercise</button>
+            </form>
+        </div>
         
         <div class="metronome-section">
             <h3>Metronome</h3>
@@ -149,6 +164,22 @@
         </footer>
     </div>
     <script>
+        function switchTab(tabName) {
+            var i;
+            var x = document.getElementsByClassName("exercise-tab");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";  
+                //x[i].classList.remove("selected-tab");
+            }
+            var x = document.getElementsByClassName("tab-button");
+            for (i = 0; i < x.length; i++) {
+                x[i].classList.remove("selected-tab");
+            }
+
+            document.getElementById(tabName).style.display = "block";             
+            document.getElementById(tabName + "-button").classList.add("selected-tab"); 
+        }
+
         // Show random pattern config only when random is selected
         function togglePatternConfig(select) {
             const patternConfig = document.getElementById('pattern-config');
