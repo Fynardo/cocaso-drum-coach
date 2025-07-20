@@ -94,7 +94,7 @@ cocaso-drum-coach/
 
 ## Version
 
-v.0.0.6
+v.0.0.7
 
 ---
 

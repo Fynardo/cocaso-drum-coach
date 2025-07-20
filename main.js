@@ -141,10 +141,9 @@ function updateStrokeDisplay(span, newStroke) {
         case 'K': span.classList.add('stroke-k'); break;
         case 'r': span.classList.add('stroke-r-lower'); break;
         case 'l': span.classList.add('stroke-l-lower'); break;
-        case 'M': span.classList.add('stroke-m'); break;
+        case '-': span.classList.add('stroke-m'); break;
     }
 }
-
 
 // Handle metronome with keyboard (spacebar)
 document.addEventListener('keydown', function(event) {
