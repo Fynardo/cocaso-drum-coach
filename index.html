@@ -19,7 +19,7 @@
         <div class="tab-buttons">
             <button class="tab-button selected-tab" id="one-bar-pattern-tab-button" onclick="switchTab('one-bar-pattern-tab')">1 Bar Patterns</button>
             <button class="tab-button" id="multi-bar-pattern-tab-button" onclick="switchTab('multi-bar-pattern-tab')">Multi Bar Exercises</button>            
-            <button class="tab-button" id="user-exercise-tab-button" onclick="switchTab('user-exercise-tab')">Bring Your Own Exercise</button>
+            <button class="tab-button" id="exercise-editor-tab-button" onclick="switchTab('exercise-editor-tab')">Exercise Editor</button>
         </div>
           
         <div id="one-bar-pattern-tab" class="exercise-tab">
@@ -116,14 +116,14 @@
             </form>
         </div>
 
-        <div id="user-exercise-tab" class="exercise-tab" style="display: none;">
+        <div id="exercise-editor-tab" class="exercise-tab" style="display: none;">
             <h2>Create your own exercise</h2>
             <p>Enter your exercise in the text area below. Use the following syntax to define the pattern:</p>
             <!-- TODO: Add a syntax reference here -->
 
-            <form id="user-exercise-form">
+            <form id="exercise-editor-form">
                 <div class="textarea-container">
-                    <textarea id="user-exercise-input" name="user-exercise-input" placeholder="Enter your exercise here" rows="10"></textarea>
+                    <textarea id="exercise-editor-input" name="exercise-editor-input" placeholder="Enter your exercise here" rows="10"></textarea>
                 </div>
                 <button type="submit" class="submit-btn">Process Exercise</button>
             </form>
@@ -131,6 +131,15 @@
         
         <div class="metronome-section">
             <h3>Metronome</h3>
+            <div class="metronome-usage">
+                <p style="font-weight:bold">Usage:</bold></p>
+                <ul>
+                    <li><small><em>Start/Stop the metronome: CTRL + Space</em></small></li>
+                    <li><small><em>Increase the BPM by 5: CTRL + ArrowUP</em></small></li>
+                    <li><small><em>Decrease the BPM by 5: CTRL + ArrowDown</em></small></li>
+                </ul>
+                
+            </div>
             <div class="form-group">
                 <label for="bpm">BPM:</label>
                 <input type="number" id="bpm" name="bpm" value="100" min="30" max="250" required>
@@ -157,7 +166,7 @@
                 <button class="metronome-btn stop-btn" onclick="stopMetronome()">Stop</button>
             </div>
             <div class="metronome-status" id="metronome-status">Ready</div>
-            <small style="color: #666; margin-top: 5px; display: block;"><em>Tip: Press spacebar to start/stop the metronome</em></small>
+            
         </div>
 
         <div id="exercise-div"></div>

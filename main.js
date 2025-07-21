@@ -105,13 +105,13 @@ document.getElementById('multi-bar-pattern-exercise-form').addEventListener('sub
     makeStrokesClickable();
 });
 
-document.getElementById('user-exercise-form').addEventListener('submit', function(e) {
+document.getElementById('exercise-editor-form').addEventListener('submit', function(e) {
     // TODO: Having the 'space' key mapped collides with the metronome LUL.
     // TODO: Would be incredible to highlight strokes as they are written.
     e.preventDefault();
 
     const formData = new FormData(this);
-    const customExercise = formData.get('user-exercise-input');
+    const customExercise = formData.get('exercise-editor-input');
     //const exercise = processExercise(exercise);
     console.log(customExercise);
 });
@@ -154,15 +154,23 @@ function updateStrokeDisplay(span, newStroke) {
     }
 }
 
-// Handle metronome with keyboard (spacebar)
+// Handle metronome with keyboard
 document.addEventListener('keydown', function(event) {
-    if (event.code === 'Space') {
+    if (event.code === 'Space' && event.ctrlKey) {
         event.preventDefault(); // Prevent page scroll
         if (!Metronome.isPlaying) {
             Metronome.start();
         } else {
             Metronome.stop();
         }
+    }
+    if (event.code === 'ArrowUp' && event.ctrlKey) {
+        event.preventDefault();
+        document.getElementById('bpm').value = parseInt(document.getElementById('bpm').value) + 5;
+    }
+    if (event.code === 'ArrowDown' && event.ctrlKey) {
+        event.preventDefault();
+        document.getElementById('bpm').value = parseInt(document.getElementById('bpm').value) - 5;
     }
 });
 
