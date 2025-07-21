@@ -21,11 +21,12 @@ Built with **good old plain HTML, JavaScript, and CSS** - no frameworks or exter
 ## Features
 
 ### 🥁 Pattern Generation
+- **Stroke Types**: Support for R (Right), L (Left), K (Kick), r (right ghost), l (left ghost), - (Mute, no stroke)
 - **Predefined Patterns**: Paradiddle, Paradiddle Left, Double Paradiddle, Single Beat, Single Beat Left
 - **Random Pattern Generator**: Create custom patterns with configurable length
-- **Stroke Types**: Support for R (Right), L (Left), K (Kick), r (right ghost), l (left ghost), - (Mute, no stroke)
-- **Pattern Flipping**: Duplicate and automatically flip patterns (R↔L, r↔l)
-- **Interactive Strokes**: Click on any stroke to cycle through different options
+- **Repository of predefined exercises**: Load one of the exercises and you are all set.
+- **Exercise Editor**: Using our own lovely syntax, create practice exercises with all the strokes you want.
+- **Interactive Strokes**: Click on any stroke in the display to cycle through different options, great for quick fixes.
 
 ### 🎵 Integrated Metronome
 - **Multiple Structures**: Crotchet (4 clicks), Quaver (8 clicks), Semiquaver (16 clicks per bar)
@@ -94,7 +95,7 @@ cocaso-drum-coach/
 
 ## Version
 
-v.0.0.7
+v.1.0.0
 
 ---
 
