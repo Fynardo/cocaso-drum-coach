@@ -249,7 +249,7 @@ function populateForms() {
 
     const exercises_select = document.getElementById('exercises-select');
     for (const [key, value] of Object.entries(exerciseRepository)) {       
-        exercises_select.innerHTML += `<option value="${key}">${value.display} (${value.tempo})</option>`;
+        exercises_select.innerHTML += `<option value="${key}">${value.display} - ${value.pattern} - (${value.tempo})</option>`;
     }
 }
 

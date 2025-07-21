@@ -62,10 +62,6 @@ export function generateOneBarPatternExercise(pattern, bars, strokes, flip, rndL
     return result;
 }
 
-/* TODO: Make this random generator a bit more sophisticated. Examples:
-  - Force to start with a specific stroke
-  - look to build the patterns with "phrases" (predefined groups of strokes)
-*/
 function generateRandomPattern(rndLen, strokes, flip) {
     // Define default strokes R and L if none selected
     let availableStrokes = strokes;
