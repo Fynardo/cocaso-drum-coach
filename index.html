@@ -17,14 +17,14 @@
         <h1>Cocaso Drum Coach</h1>
         
         <div class="tab-buttons">
-            <button class="tab-button selected-tab" id="one-bar-pattern-tab-button" onclick="switchTab('one-bar-pattern-tab')">1 Bar Patterns</button>
-            <button class="tab-button" id="multi-bar-pattern-tab-button" onclick="switchTab('multi-bar-pattern-tab')">Multi Bar Exercises</button>            
+            <button class="tab-button selected-tab" id="rudiments-tab-button" onclick="switchTab('rudiments-tab')">Rudiments and Patterns</button>
+            <button class="tab-button" id="exercises-repository-tab-button" onclick="switchTab('exercises-repository-tab')">Exercises Repository</button>
             <button class="tab-button" id="exercise-editor-tab-button" onclick="switchTab('exercise-editor-tab')">Exercise Editor</button>
         </div>
           
-        <div id="one-bar-pattern-tab" class="exercise-tab">
-            <h2>1 Bar Pattern Exercises</h2>
-            <form id="1-bar-pattern-exercise-form">
+        <div id="rudiments-tab" class="exercise-tab">
+            <h2>Rudiments and Patterns</h2>
+            <form id="rudiments-form">
                 <!-- First row: Pattern and Bars -->
                 <div class="form-row">
                     <div class="form-group">
@@ -103,10 +103,10 @@
             </form>
         </div>
 
-        <div id="multi-bar-pattern-tab" class="exercise-tab" style="display: none;">
-            <h2>Multi Bar Exercises</h2>
+        <div id="exercises-repository-tab" class="exercise-tab" style="display: none;">
+            <h2>Exercises Repository</h2>
 
-            <form id="multi-bar-pattern-exercise-form">
+            <form id="exercises-repository-form">
                 <label for="exercises-select">Exercise:</label>
                 <select id="exercises-select" name="exercises" required>
                     <option value="">Select an option...</option>

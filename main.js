@@ -25,7 +25,7 @@ window.stopMetronome = stopMetronome;
 const strokeCycle = ['R', 'r', 'L', 'l', 'K', '-'];
 
 // Forms submission handler
-document.getElementById('1-bar-pattern-exercise-form').addEventListener('submit', function(e) {
+document.getElementById('rudiments-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
     // Get form values
@@ -80,7 +80,7 @@ document.getElementById('1-bar-pattern-exercise-form').addEventListener('submit'
 });
 
 
-document.getElementById('multi-bar-pattern-exercise-form').addEventListener('submit', function(e) {
+document.getElementById('exercises-repository-form').addEventListener('submit', function(e) {
      e.preventDefault();
 
     const formData = new FormData(this);
