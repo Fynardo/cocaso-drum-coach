@@ -105,7 +105,16 @@ document.getElementById('multi-bar-pattern-exercise-form').addEventListener('sub
     makeStrokesClickable();
 });
 
+document.getElementById('user-exercise-form').addEventListener('submit', function(e) {
+    // TODO: Having the 'space' key mapped collides with the metronome LUL.
+    // TODO: Would be incredible to highlight strokes as they are written.
+    e.preventDefault();
 
+    const formData = new FormData(this);
+    const customExercise = formData.get('user-exercise-input');
+    //const exercise = processExercise(exercise);
+    console.log(customExercise);
+});
 
 // Stroke cycling functions
 function makeStrokesClickable() {

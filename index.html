@@ -19,6 +19,7 @@
         <div class="tab-buttons">
             <button class="tab-button selected-tab" id="one-bar-pattern-tab-button" onclick="switchTab('one-bar-pattern-tab')">1 Bar Patterns</button>
             <button class="tab-button" id="multi-bar-pattern-tab-button" onclick="switchTab('multi-bar-pattern-tab')">Multi Bar Exercises</button>            
+            <button class="tab-button" id="user-exercise-tab-button" onclick="switchTab('user-exercise-tab')">Bring Your Own Exercise</button>
         </div>
           
         <div id="one-bar-pattern-tab" class="exercise-tab">
@@ -112,6 +113,19 @@
                     <!-- Dynamically populated by patternRepository -->
                 </select>
                 <button type="submit" class="submit-btn">Load Demo Exercise</button>
+            </form>
+        </div>
+
+        <div id="user-exercise-tab" class="exercise-tab" style="display: none;">
+            <h2>Create your own exercise</h2>
+            <p>Enter your exercise in the text area below. Use the following syntax to define the pattern:</p>
+            <!-- TODO: Add a syntax reference here -->
+
+            <form id="user-exercise-form">
+                <div class="textarea-container">
+                    <textarea id="user-exercise-input" name="user-exercise-input" placeholder="Enter your exercise here" rows="10"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Process Exercise</button>
             </form>
         </div>
         

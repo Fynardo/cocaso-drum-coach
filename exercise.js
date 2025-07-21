@@ -32,6 +32,17 @@ function expandPattern(pattern) {
     return result;
 }
 
+export function processExercise(exercise) {
+    /* User entered exercise
+      - Sanitize the input
+      - Check if the syntax is valid
+      - Expand the pattern as usual
+    */
+    const expandedExercise = expandPattern(exercise);
+    const result = styleExercise(expandedExercise);
+    return result;
+}
+
 export function loadExerciseFromRepository(exerciseName) {
     const exercise = exerciseRepository[exerciseName];
     const expandedExercise = expandPattern(exercise.pattern);
