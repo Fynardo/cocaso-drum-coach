@@ -237,6 +237,22 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
     background-color: var(--btn-primary-hover);
 }
 
+.textarea-container {
+    padding: 10px;
+    min-height: 100px;
+    resize: vertical;
+}
+
+#exercise-editor-input {
+    width: 100%;
+    font-size: 16px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
 .exercise-div {
     margin-top: 20px;
     padding: 15px;

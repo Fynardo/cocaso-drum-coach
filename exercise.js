@@ -32,6 +32,13 @@ function expandPattern(pattern) {
     return result;
 }
 
+export function processExercise(exercise) {
+    // TODO: Check if the syntax is valid. Gotta get that interpreter working LUL
+    const expandedExercise = expandPattern(exercise);
+    const result = styleExercise(expandedExercise);
+    return result;
+}
+
 export function loadExerciseFromRepository(exerciseName) {
     const exercise = exerciseRepository[exerciseName];
     const expandedExercise = expandPattern(exercise.pattern);

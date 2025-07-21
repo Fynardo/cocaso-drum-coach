@@ -18,7 +18,8 @@
         
         <div class="tab-buttons">
             <button class="tab-button selected-tab" id="rudiments-tab-button" onclick="switchTab('rudiments-tab')">Rudiments and Patterns</button>
-            <button class="tab-button" id="exercises-repository-tab-button" onclick="switchTab('exercises-repository-tab')">Exercises Repository</button>            
+            <button class="tab-button" id="exercises-repository-tab-button" onclick="switchTab('exercises-repository-tab')">Exercises Repository</button>
+            <button class="tab-button" id="exercise-editor-tab-button" onclick="switchTab('exercise-editor-tab')">Exercise Editor</button>
         </div>
           
         <div id="rudiments-tab" class="exercise-tab">
@@ -114,9 +115,43 @@
                 <button type="submit" class="submit-btn">Load Demo Exercise</button>
             </form>
         </div>
+
+        <div id="exercise-editor-tab" class="exercise-tab" style="display: none;">
+            <h2>Create your own exercise</h2>
+            <p>Enter your exercise in the text area below. Use the following syntax to define the pattern:</p>
+            <ul>
+                <li>Letters: Strokes (R, L, K, r, l, -)</li>
+                <li>Parentheses: Group a set of strokes together</li>
+                <li>Numbers: Repeat a group of strokes a number of times</li>
+                <li>Spaces: Separate groups of strokes</li>
+                <li>Groups are not enforced, but handy</li>
+            </ul>
+            <p>Examples:<p>
+            <ul>
+                <li style="font-family: monospace; font-size: 16px;">2(rrllR-L-) -> rrllR-L- rrllR-L-</li>
+                <li style="font-family: monospace; font-size: 16px;">2(Rrr-) Lll- 2(KRKL-) LlRrLlRrK- -> Rrr- Lll- KRKL- KRKL- LlRrLlRrK-</li>
+            </ul>
+            
+
+            <form id="exercise-editor-form">
+                <div class="textarea-container">
+                    <textarea id="exercise-editor-input" name="exercise-editor-input" placeholder="Enter your exercise here" rows="10"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Process Exercise</button>
+            </form>
+        </div>
         
         <div class="metronome-section">
             <h3>Metronome</h3>
+            <div class="metronome-usage">
+                <p style="font-weight:bold">Usage:</bold></p>
+                <ul>
+                    <li><small><em>Start/Stop the metronome: CTRL + Space</em></small></li>
+                    <li><small><em>Increase the BPM by 5: CTRL + ArrowUP</em></small></li>
+                    <li><small><em>Decrease the BPM by 5: CTRL + ArrowDown</em></small></li>
+                </ul>
+                
+            </div>
             <div class="form-group">
                 <label for="bpm">BPM:</label>
                 <input type="number" id="bpm" name="bpm" value="100" min="30" max="250" required>
@@ -143,7 +178,7 @@
                 <button class="metronome-btn stop-btn" onclick="stopMetronome()">Stop</button>
             </div>
             <div class="metronome-status" id="metronome-status">Ready</div>
-            <small style="color: #666; margin-top: 5px; display: block;"><em>Tip: Press spacebar to start/stop the metronome</em></small>
+            
         </div>
 
         <div id="exercise-div"></div>
