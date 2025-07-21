@@ -119,7 +119,19 @@
         <div id="exercise-editor-tab" class="exercise-tab" style="display: none;">
             <h2>Create your own exercise</h2>
             <p>Enter your exercise in the text area below. Use the following syntax to define the pattern:</p>
-            <!-- TODO: Add a syntax reference here -->
+            <ul>
+                <li>Letters: Strokes (R, L, K, r, l, -)</li>
+                <li>Parentheses: Group a set of strokes together</li>
+                <li>Numbers: Repeat a group of strokes a number of times</li>
+                <li>Spaces: Separate groups of strokes</li>
+                <li>Groups are not enforced, but handy</li>
+            </ul>
+            <p>Examples:<p>
+            <ul>
+                <li style="font-family: monospace; font-size: 16px;">2(rrllR-L-) -> rrllR-L- rrllR-L-</li>
+                <li style="font-family: monospace; font-size: 16px;">2(Rrr-) Lll- 2(KRKL-) LlRrLlRrK- -> Rrr- Lll- KRKL- KRKL- LlRrLlRrK-</li>
+            </ul>
+            
 
             <form id="exercise-editor-form">
                 <div class="textarea-container">

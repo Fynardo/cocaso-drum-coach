@@ -33,11 +33,7 @@ function expandPattern(pattern) {
 }
 
 export function processExercise(exercise) {
-    /* User entered exercise
-      - Sanitize the input
-      - Check if the syntax is valid
-      - Expand the pattern as usual
-    */
+    // TODO: Check if the syntax is valid. Gotta get that interpreter working LUL
     const expandedExercise = expandPattern(exercise);
     const result = styleExercise(expandedExercise);
     return result;

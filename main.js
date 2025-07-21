@@ -1,4 +1,4 @@
-import { patternRepository, exerciseRepository, generateOneBarPatternExercise, loadExerciseFromRepository} from './exercise.js';
+import { patternRepository, exerciseRepository, generateOneBarPatternExercise, loadExerciseFromRepository, processExercise} from './exercise.js';
 import { ThemeManager } from './theme.js';
 import { Metronome } from './metronome.js';
 
@@ -105,15 +105,35 @@ document.getElementById('multi-bar-pattern-exercise-form').addEventListener('sub
     makeStrokesClickable();
 });
 
+function sanitizeExercise(exercise) {
+    // Remove all chars that are not in our syntax. Basically numbers and chars that represent strokes.
+    return exercise.replace(/[^0-9RrLlK-\s\(\)]/g, '');
+}
+
 document.getElementById('exercise-editor-form').addEventListener('submit', function(e) {
-    // TODO: Having the 'space' key mapped collides with the metronome LUL.
-    // TODO: Would be incredible to highlight strokes as they are written.
     e.preventDefault();
 
     const formData = new FormData(this);
     const customExercise = formData.get('exercise-editor-input');
-    //const exercise = processExercise(exercise);
-    console.log(customExercise);
+    const sanitized = sanitizeExercise(customExercise);
+    const exercise = processExercise(sanitized);
+
+    const exerciseDiv = `
+        <div class="exercise-div">
+            <h3>Drum Practice Exercise Generated!</h3>         
+            <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                <h4 style="margin-top: 0; color: #495057;">Your Practice Exercise:</h4>
+                <div class="exercise-display" id="exercise-display">${exercise}</div>
+                <button class="copy-button" id="copy-exercise-btn" onclick="copyExercise()">📋 Copy Exercise</button>
+            </div>
+            <p><em>Each stroke represents one subdivision based on your selected structure. Start the metronome to practice!<br>The metronome begins with a preparation bar, then plays the exercise, with rest bars between cycles.<br><strong>Click on any stroke to cycle through different options (R → r → L → l → K → M)</strong></em></p>
+        </div>
+    `;
+ 
+    document.getElementById('exercise-div').innerHTML = exerciseDiv;
+ 
+    // Make strokes clickable after the exercise is loaded
+    makeStrokesClickable();
 });
 
 // Stroke cycling functions
