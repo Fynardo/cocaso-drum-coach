@@ -5,11 +5,16 @@ export const exerciseRepository = {
 }
 
 export const patternRepository = {
-    paradiddle: {display: "Paradiddle", pattern: "RLRRLRLL"},
-    paradiddleLeft: {display: "Paradiddle Left", pattern: "LRLLRLRR"},
-    doubleParadiddle: {display: "Double Paradiddle", pattern: "RLRLRRLRLRLL"},
-    singleBeat: {display: "Single Beat", pattern: "RLRLRLRL"},
-    singleBeatLeft: {display: "Single Beat Left", pattern: "LRLRLRLR"}
+    doubles: {display: "Doubles", pattern: "rrllrrll"},
+    doublesLeft: {display: "Doubles Left", pattern: "llrrllrr"},
+    paradiddle: {display: "Paradiddle", pattern: "rlrrlrll"},
+    paraddielAccent: {display: "Paradiddle (Accent)", pattern: "RlRrLrLl"},
+    paradiddleLeft: {display: "Paradiddle Left", pattern: "lrllrlrr"},
+    doubleParadiddle: {display: "Double Paradiddle", pattern: "rlrlrrlrlrll"},
+    singleBeat: {display: "Singles", pattern: "rlrlrlrl"},
+    singleBeatLeft: {display: "Singles Left", pattern: "lrllrlrr"},
+    singleAccent: {display: "Singles (accent)", pattern: "RlRlRlRl"},
+    singleAccentLeft: {display: "Singles (accent) Left", pattern: "LrLrLrLr"},
 }
 
 function expandPattern(pattern) {

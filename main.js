@@ -244,7 +244,7 @@ function formatStrokes(strokes) {
 function populateForms() {    
     const pattern_select = document.getElementById('pattern-select');
     for (const [key, value] of Object.entries(patternRepository)) {       
-        pattern_select.innerHTML += `<option value="${key}">${value.display}</option>`;
+        pattern_select.innerHTML += `<option value="${key}">${value.display} - ${value.pattern}</option>`;
     }
 
     const exercises_select = document.getElementById('exercises-select');
