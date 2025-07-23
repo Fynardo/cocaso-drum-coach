@@ -221,7 +221,6 @@ export const Metronome = {
        
     // Play click and handle highlighting
     playClickAndHighlight: function() {
-        this.playClick();
         
         if (this.totalStrokes > 0) {
             if (this.isPreparationBar) {
@@ -274,10 +273,17 @@ export const Metronome = {
                 }
             }
         }
+        if (this.isPreparationBar) {
+            this.playPreparationClick();
+        } else if (this.isInEmptyBar) {
+            this.playPreparationClick();
+        } else {
+            this.playExerciseClick();
+        }
     },
     
-    // Create click sound using Web Audio API
-    playClick: function() {
+    // Create click sound using Web Audio API - for preparation and rest bars
+    playPreparationClick: function() {
         this.initAudioContext();
         
         const oscillator = this.audioContext.createOscillator();
@@ -286,17 +292,40 @@ export const Metronome = {
         oscillator.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
         
-        // Create a short, sharp click sound
-        oscillator.frequency.value = 800; // 800 Hz frequency
+        // Create a softer, lower pitched click sound for preparation/rest
+        oscillator.frequency.value = 600; // 600 Hz frequency (lower than exercise)
         oscillator.type = 'sine';
         
-        // Quick attack and decay for click sound
+        // Gentler attack and decay for preparation sound
         gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0.2, this.audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.12);
         
         oscillator.start(this.audioContext.currentTime);
-        oscillator.stop(this.audioContext.currentTime + 0.1);
+        oscillator.stop(this.audioContext.currentTime + 0.12);
+    },
+
+    // Create click sound using Web Audio API - for exercise bars
+    playExerciseClick: function() {
+        this.initAudioContext();
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        // Create a sharper, higher pitched click sound for exercise
+        oscillator.frequency.value = 1000; // 1000 Hz frequency (higher than preparation)
+        oscillator.type = 'triangle'; // Different waveform for distinction
+
+        // Sharp attack and decay for exercise sound
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.35, this.audioContext.currentTime + 0.005);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.08);
+
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 0.08);
     },
 
     start: function() {
@@ -343,11 +372,11 @@ export const Metronome = {
         
         if (document.getElementById("exercise-div").innerHTML === "") {
             // If no exercise is generated, just play some clicks
-            this.playClick();
+            this.playPreparationClick();
 
             // Start interval for subsequent clicks (quarter note interval for preparation bar)
             this.metronomeInterval = setInterval(() => {
-                this.playClick();
+                this.playPreparationClick();
             }, quarterNoteInterval);
         } else {
             // Play first click of preparation bar
