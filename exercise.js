@@ -34,13 +34,17 @@ export const ExerciseEntity = {
             - 2(rrllR-L-) -> rrllR-L- rrllR-L-
             - 4(R-L-rrll) -> R-L-rrll R-L-rrll R-L-rrll R-L-rrll
         */
-        const regex = /\d\([rRLl\-K]+\)/
+        const group_regex = /\d\([rRLl\-K]+\)/
+        const simple_regex = /[rRLl\-K]+/
         const tokens = this.pattern.split(" ");
         let result = "";
         for (const token of tokens) {
-            if (regex.test(token)) {
+            if (group_regex.test(token)) {
                 const [count, pattern] = token.split("(");            
                 result += pattern.replace(")", "").repeat(count);
+            }
+            else if (simple_regex.test(token)) {
+                result += token;
             }
         }
         //console.log("Expanded pattern: " + result);
