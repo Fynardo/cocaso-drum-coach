@@ -19,7 +19,8 @@ export const ExerciseEntity = {
                 result += classifyStroke(stroke, strokeIndex);
                 strokeIndex++;
                 if (strokeIndex % timeSignatureStep == 0) {
-                    result += "|";
+                    // &#8203; is a zero-width space to force the line to break around the bar delimiter
+                    result += "|&#8203;";
                 }
             }    
         }
@@ -140,7 +141,8 @@ function classifyStroke(stroke, strokeIndex) {
         case "l":
             return `<span class="stroke-l-lower" id="stroke-${strokeIndex}">l</span>`;
         case "-":
-            return `<span class="stroke-m" id="stroke-${strokeIndex}">-</span>`;
+            // &#x2011; is a special character that is a hyphen but doesn't break the line
+            return `<span class="stroke-m" id="stroke-${strokeIndex}">&#x2011;</span>`;
         default:
             return `<span id="stroke-${strokeIndex}">${stroke}</span>`;
     }
