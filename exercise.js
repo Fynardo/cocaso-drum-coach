@@ -1,70 +1,94 @@
+export const ExerciseEntity = {
+    name: "",
+    pattern: "",
+
+    update: function(name, pattern) {
+        this.name = name;
+        this.pattern = pattern;
+        //console.log("Updated exercise: " + this.name + " " + this.pattern);
+    },
+
+    style: function(timeSignatureStep) {
+        const bars = this.expand();
+        let strokeIndex = 0;
+        let result = "";
+    
+        for (let i = 0; i < bars.length; i++) {
+            // Color-code each stroke in the pattern and add unique IDs
+            for (const stroke of bars[i]) {
+                result += classifyStroke(stroke, strokeIndex);
+                strokeIndex++;
+                if (strokeIndex % timeSignatureStep == 0) {
+                    result += "|";
+                }
+            }    
+        }
+        //console.log("Styled exercise: " + result);
+        return result;
+    },
+
+    expand: function() {
+        /* To make the exercises easier to write, we use a syntax that allows us to repeat some patterns.
+        Examples:
+            - 2(rrllR-L-) -> rrllR-L- rrllR-L-
+            - 4(R-L-rrll) -> R-L-rrll R-L-rrll R-L-rrll R-L-rrll
+        */
+        const regex = /\d\([rRLl\-K]+\)/
+        const tokens = this.pattern.split(" ");
+        let result = "";
+        for (const token of tokens) {
+            if (regex.test(token)) {
+                const [count, pattern] = token.split("(");            
+                result += pattern.replace(")", "").repeat(count);
+            }
+        }
+        //console.log("Expanded pattern: " + result);
+        return result;
+    },
+}
+
 export const exerciseRepository = {
     // More complex exercises are defined using a custom syntax.
-    basic1: {display: "Basic 1", pattern: "4(Rrr-) 4(Lll-) 4(Rrr-) 2(Lll-) 2(LlRr)", tempo: "quaver"},
-    basic2: {display: "Basic 2", pattern: "7(R-llL-rr) 2(RlLr)", tempo: "quaver"},
+    basic1: {name: "Basic 1", pattern: "4(Rrr-) 4(Lll-) 4(Rrr-) 2(Lll-) 2(LlRr)"},
+    basic2: {name: "Basic 2", pattern: "7(R-llL-rr) 2(RlLr)"},
 }
 
 export const patternRepository = {
-    doubles: {display: "Doubles", pattern: "rrllrrll"},
-    doublesLeft: {display: "Doubles Left", pattern: "llrrllrr"},
-    paradiddle: {display: "Paradiddle", pattern: "rlrrlrll"},
-    paraddielAccent: {display: "Paradiddle (Accent)", pattern: "RlRrLrLl"},
-    paradiddleLeft: {display: "Paradiddle Left", pattern: "lrllrlrr"},
-    doubleParadiddle: {display: "Double Paradiddle", pattern: "rlrlrrlrlrll"},
-    singleBeat: {display: "Singles", pattern: "rlrlrlrl"},
-    singleBeatLeft: {display: "Singles Left", pattern: "lrllrlrr"},
-    singleAccent: {display: "Singles (accent)", pattern: "RlRlRlRl"},
-    singleAccentLeft: {display: "Singles (accent) Left", pattern: "LrLrLrLr"},
+    doubles: {name: "Doubles", pattern: "rrllrrll"},
+    doublesLeft: {name: "Doubles Left", pattern: "llrrllrr"},
+    paradiddle: {name: "Paradiddle", pattern: "rlrrlrll"},
+    paradiddleAccent: {name: "Paradiddle (Accent)", pattern: "RlRrLrLl"},
+    paradiddleLeft: {name: "Paradiddle Left", pattern: "lrllrlrr"},
+    doubleParadiddle: {name: "Double Paradiddle", pattern: "rlrlrrlrlrll"},
+    singleBeat: {name: "Singles", pattern: "rlrlrlrl"},
+    singleBeatLeft: {name: "Singles Left", pattern: "lrllrlrr"},
+    singleAccent: {name: "Singles (accent)", pattern: "RlRlRlRl"},
+    singleAccentLeft: {name: "Singles (accent) Left", pattern: "LrLrLrLr"},
 }
 
-function expandPattern(pattern) {
-    /* To make the exercises easier to write, we use a syntax that allows us to repeat some patterns.
-    Examples:
-     - 2(rrllR-L-) -> rrllR-L- rrllR-L-
-     - 4(R-L-rrll) -> R-L-rrll R-L-rrll R-L-rrll R-L-rrll
-    */
-    const regex = /\d\([rRLl\-K]+\)/
-    const tokens = pattern.split(" ");
-    let result = "";
-    for (const token of tokens) {
-        if (regex.test(token)) {
-            const [count, pattern] = token.split("(");            
-            result += pattern.replace(")", " ").repeat(count);
-        } else {
-            result += token + " ";
-        }
-    }
-    return result;
-}
 
 export function processExercise(exercise) {
-    // TODO: Check if the syntax is valid. Gotta get that interpreter working LUL
-    const expandedExercise = expandPattern(exercise);
-    const result = styleExercise(expandedExercise);
-    return result;
+    ExerciseEntity.update("User Edited", exercise);
 }
 
 export function loadExerciseFromRepository(exerciseName) {
     const exercise = exerciseRepository[exerciseName];
-    const expandedExercise = expandPattern(exercise.pattern);
-
-    const result = styleExercise(expandedExercise);
-    return result
+    ExerciseEntity.update(exercise.name, exercise.pattern);
 }
 
 export function generateOneBarPatternExercise(pattern, bars, strokes, flip, rndLen) {    
     let bar = "";
     if (pattern === "random") {
         bar = generateRandomPattern(rndLen, strokes, flip);
+        pattern = bars + "(" + bar + ")";
+        name = "Random"
+        console.log("Random pattern: " + bar);
     } else {
         bar = patternRepository[pattern].pattern;
+        pattern = bars + "(" + bar + ")";
     }
-    // Convert the bar to our lovely expandable syntax
-    bar = bars + "(" + bar + ")";
-    const expandedBar = expandPattern(bar);
 
-    const result = styleExercise(expandedBar);
-    return result;
+    ExerciseEntity.update(name, pattern);
 }
 
 function generateRandomPattern(rndLen, strokes, flip) {
@@ -101,27 +125,6 @@ function generateRandomPattern(rndLen, strokes, flip) {
     }
 
     return bar;
-}
-
-
-function styleExercise(exercise) {
-    // A bit hacky but treat each bar as a separate entity to gracefully handle the empty spaces between bars
-    const bars = exercise.split(" ");
-    let strokeIndex = 0;
-    let result = "";
-
-    for (let i = 0; i < bars.length; i++) {
-        // Color-code each stroke in the pattern and add unique IDs
-        for (const stroke of bars[i]) {
-            result += classifyStroke(stroke, strokeIndex);
-            strokeIndex++;
-        }
-        if (i < bars.length - 1) {
-            result += " "; // Add space between bars
-        }
-    }
-
-    return result;
 }
 
 function classifyStroke(stroke, strokeIndex) {
