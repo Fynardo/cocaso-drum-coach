@@ -1,6 +1,8 @@
 import { patternRepository, exerciseRepository, generateOneBarPatternExercise, loadExerciseFromRepository, processExercise, ExerciseEntity} from './exercise.js';
-import { ThemeManager } from './theme.js';
 import { Metronome } from './metronome.js';
+import { ThemeManager } from './theme.js';
+import { Logger } from './logger.js';
+
 
 // Set current year dynamically
  document.addEventListener('DOMContentLoaded', function() {
@@ -21,29 +23,36 @@ function stopMetronome() {
 window.startMetronome = startMetronome;
 window.stopMetronome = stopMetronome;
 
+document.getElementById('debug-button').addEventListener('click', () => {
+    const debugButton = document.getElementById('debug-button');
+    debugButton.classList.toggle('debug-button-enabled');
+    Logger.debugMode = !Logger.debugMode;
+});
+
+
 // Stroke cycling variables
 const strokeCycle = ['R', 'r', 'L', 'l', 'K', '-'];
 
 function prepareExercise() {
-    //console.log("Preparing exercise");
+    Logger.debug("Preparing exercise");
     const timeSignature = Metronome.getTimeSignatureSettings();
     const patternTempo = Metronome.getPatternTempoSettings();
     const step = timeSignature.beatsPerBar * patternTempo.subdivision; // Example: 3/4 * quavers (2) = 6 -> Space each 6 strokes
-    //console.log("Step: " + step);
+    Logger.debug("Step: " + step);
     const styledExercise = ExerciseEntity.style(step);
     return styledExercise;
 }
 
 
 document.getElementById('time-signature').onchange = function() {
-    //console.log("Time signature changed");
     // Update the exercise
+    Logger.debug("Time signature changed");
     document.getElementById('exercise-display').innerHTML = prepareExercise();
 }
 
 document.getElementById('pattern-tempo').onchange = function() {
-    //console.log("Pattern tempo changed");
     // Update the exercise
+    Logger.debug("Pattern tempo changed");
     document.getElementById('exercise-display').innerHTML = prepareExercise();
 }
 

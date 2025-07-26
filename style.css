@@ -66,6 +66,7 @@
     --btn-danger-hover: #bb2d3b;
     --btn-secondary: #6c757d;
     --btn-secondary-hover: #5c636a;
+    --btn-secondary-active: #4c535a;
     
     --stroke-r: #ff6b6b;
     --stroke-l: #4dabf7;
@@ -429,6 +430,37 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
 
 .theme-toggle:active {
     transform: scale(0.95);
+}
+
+.debug-button {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    background-color: var(--btn-secondary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px var(--shadow-medium);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.debug-button:hover {
+    background-color: var(--btn-primary);
+    transform: scale(1.1);
+}
+
+.debug-button:active {
+    transform: scale(0.95);
+    
+}
+
+.debug-button-enabled {
+    background-color: var(--btn-primary);
 }
 
 /* Footer styles */

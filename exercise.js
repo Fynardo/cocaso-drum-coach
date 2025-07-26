@@ -1,3 +1,5 @@
+import { Logger } from './logger.js';
+
 export const ExerciseEntity = {
     name: "",
     pattern: "",
@@ -5,7 +7,7 @@ export const ExerciseEntity = {
     update: function(name, pattern) {
         this.name = name;
         this.pattern = pattern;
-        //console.log("Updated exercise: " + this.name + " " + this.pattern);
+        Logger.debug("Updated exercise: " + this.name + " " + this.pattern);
     },
 
     style: function(timeSignatureStep) {
@@ -24,7 +26,7 @@ export const ExerciseEntity = {
                 }
             }    
         }
-        //console.log("Styled exercise: " + result);
+        Logger.debug("Styled exercise: " + result);
         return result;
     },
 
@@ -36,12 +38,12 @@ export const ExerciseEntity = {
             - 2(3(rr)ll) -> rrrrrrllrrrrrrll (nested groups)
         */
         const trimmed = this.pattern.replaceAll(" ", "");
-        //console.log("Expanding pattern: " + trimmed);
+        Logger.debug("Expanding pattern: " + trimmed);
         return this.expandToken(trimmed);
     },
 
     expandToken: function(token) {
-        //console.log("Expanding token: " + token);
+        Logger.debug("Expanding token: " + token);
         // Base case: if no parentheses, return as is
         if (!token.includes('(')) {
             return token;
@@ -119,7 +121,7 @@ export function generateOneBarPatternExercise(pattern, bars, strokes, flip, rndL
         bar = generateRandomPattern(rndLen, strokes, flip);
         pattern = bars + "(" + bar + ")";
         name = "Random"
-        console.log("Random pattern: " + bar);
+        Logger.debug("Random pattern: " + bar);
     } else {
         bar = patternRepository[pattern].pattern;
         pattern = bars + "(" + bar + ")";
