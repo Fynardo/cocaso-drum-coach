@@ -33,22 +33,53 @@ export const ExerciseEntity = {
         Examples:
             - 2(rrllR-L-) -> rrllR-L- rrllR-L-
             - 4(R-L-rrll) -> R-L-rrll R-L-rrll R-L-rrll R-L-rrll
+            - 2(3(rr)ll) -> rrrrrrllrrrrrrll (nested groups)
         */
-        const group_regex = /\d\([rRLl\-K]+\)/
-        const simple_regex = /[rRLl\-K]+/
-        const tokens = this.pattern.split(" ");
-        let result = "";
-        for (const token of tokens) {
-            if (group_regex.test(token)) {
-                const [count, pattern] = token.split("(");            
-                result += pattern.replace(")", "").repeat(count);
-            }
-            else if (simple_regex.test(token)) {
-                result += token;
+        const trimmed = this.pattern.replaceAll(" ", "");
+        //console.log("Expanding pattern: " + trimmed);
+        return this.expandToken(trimmed);
+    },
+
+    expandToken: function(token) {
+        //console.log("Expanding token: " + token);
+        // Base case: if no parentheses, return as is
+        if (!token.includes('(')) {
+            return token;
+        }
+
+        // Find the first digit followed by (
+        const match = token.match(/\d+\(/);
+        if (match) {
+            const matchStart = match.index;
+            const countStr = match[0].slice(0, -1); // Remove the '('
+            const count = parseInt(countStr);
+            const parenStart = matchStart + countStr.length;
+            const parenEnd = this.findMatchingParen(token, parenStart);
+
+            if (parenEnd !== -1) {
+                const content = token.substring(parenStart + 1, parenEnd);
+                // Recursively expand the content
+                const expandedContent = this.expandToken(content);
+                // Repeat the expanded content
+                const repeated = expandedContent.repeat(count);
+                // Replace the group in the token and continue expanding
+                const before = token.substring(0, matchStart);
+                const after = token.substring(parenEnd + 1);
+                const newToken = before + repeated + after;
+                return this.expandToken(newToken);
             }
         }
-        //console.log("Expanded pattern: " + result);
-        return result;
+        return token;
+    },
+
+    findMatchingParen: function(str, startIndex) {
+        let count = 1;
+        for (let i = startIndex + 1; i < str.length; i++) {
+            if (str[i] === '(') count++;
+            else if (str[i] === ')') count--;
+            if (count === 0) return i;
+        }
+        return -1;
     },
 }
 
@@ -69,6 +100,7 @@ export const patternRepository = {
     singleBeatLeft: {name: "Singles Left", pattern: "lrllrlrr"},
     singleAccent: {name: "Singles (accent)", pattern: "RlRlRlRl"},
     singleAccentLeft: {name: "Singles (accent) Left", pattern: "LrLrLrLr"},
+    eightFourTwoTwo: {name: "8-4-2-2", pattern: "8(r) 8(l) 4(r) 4(l) rrllrrll"},
 }
 
 
