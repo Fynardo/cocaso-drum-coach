@@ -17,28 +17,43 @@ export const Metronome = {
         }
     },
     
+    timeSignatures: {
+        '3/4': {
+            name: '3/4',
+            beatsPerBar: 3
+        },
+        '4/4': {
+            name: '4/4',
+            beatsPerBar: 4
+        },
+        '5/4': {
+            name: '5/4',
+            beatsPerBar: 5
+        },
+        '6/4': {
+            name: '6/4',
+            beatsPerBar: 6
+        },
+        '7/4': {
+            name: '7/4',
+            beatsPerBar: 7
+        },
+        '8/4': {
+            name: '8/4',
+            beatsPerBar: 8
+        },
+        '9/4': {
+            name: '9/4',
+            beatsPerBar: 9
+        }
+    },
+
     // Get current time-signature settings (time signature)
     getTimeSignatureSettings: function() {
         const timeSignatureSelect = document.getElementById('time-signature');
         const timeSignature = timeSignatureSelect.value;
     
-        switch (timeSignature) {
-            case '4/4':
-                return {
-                    name: '4/4',
-                    beatsPerBar: 4
-                };
-            case '3/4':
-                return {
-                    name: '3/4',
-                    beatsPerBar: 3
-                };
-            default:
-                return {
-                    name: '4/4',
-                    beatsPerBar: 4
-                };
-        }
+        return this.timeSignatures[timeSignature];
     },
     
     // Get current structure settings

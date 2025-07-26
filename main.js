@@ -48,12 +48,14 @@ document.getElementById('time-signature').onchange = function() {
     // Update the exercise
     Logger.debug("Time signature changed");
     document.getElementById('exercise-display').innerHTML = prepareExercise();
+    makeStrokesClickable();
 }
 
 document.getElementById('pattern-tempo').onchange = function() {
     // Update the exercise
     Logger.debug("Pattern tempo changed");
     document.getElementById('exercise-display').innerHTML = prepareExercise();
+    makeStrokesClickable();
 }
 
 // Forms submission handler
@@ -276,14 +278,19 @@ function formatStrokes(strokes) {
 
 // Populate the exercises dropdowns with repository data
 function populateForms() {    
-    const pattern_select = document.getElementById('pattern-select');
+    const patternSelect = document.getElementById('pattern-select');
     for (const [key, value] of Object.entries(patternRepository)) {       
-        pattern_select.innerHTML += `<option value="${key}">${value.name} - ${value.pattern}</option>`;
+        patternSelect.innerHTML += `<option value="${key}">${value.name} - ${value.pattern}</option>`;
     }
 
-    const exercises_select = document.getElementById('exercises-select');
+    const exercisesSelect = document.getElementById('exercises-select');
     for (const [key, value] of Object.entries(exerciseRepository)) {       
-        exercises_select.innerHTML += `<option value="${key}">${value.name} - ${value.pattern}</option>`;
+        exercisesSelect.innerHTML += `<option value="${key}">${value.name} - ${value.pattern}</option>`;
+    }
+
+    const timeSignatureSelect = document.getElementById('time-signature');
+    for (const [key, value] of Object.entries(Metronome.timeSignatures)) {
+        timeSignatureSelect.innerHTML += `<option value="${key}">${value.name}</option>`;
     }
 }
 
