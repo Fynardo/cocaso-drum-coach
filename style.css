@@ -6,6 +6,7 @@
     --bg-tertiary: #f8f9fa;
     --bg-success: #d4edda;
     --bg-highlight: #ffeaa7;
+    --bg-bar-highlight: #f8f4ea;
     --bg-hover: #f0f0f0;
     
     --text-primary: #333;
@@ -45,6 +46,7 @@
     --bg-tertiary: #3a3a3a;
     --bg-success: #1e3a2e;
     --bg-highlight: #4a4a2a;
+    --bg-bar-highlight: #cecece9a;
     --bg-hover: #404040;
     
     --text-primary: #e0e0e0;
@@ -354,6 +356,14 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
 
 .stroke-highlight {
     background-color: var(--bg-highlight);
+    padding: 0px;
+    border-radius: 3px;
+    box-shadow: 0 0 8px var(--shadow-glow);
+    transition: all 0.1s ease;
+}
+
+.bar-highlight {
+    background-color: var(--bg-bar-highlight);
     padding: 0px;
     border-radius: 3px;
     box-shadow: 0 0 8px var(--shadow-glow);

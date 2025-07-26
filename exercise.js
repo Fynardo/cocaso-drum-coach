@@ -12,20 +12,26 @@ export const ExerciseEntity = {
     },
 
     style: function(timeSignatureStep) {
-        const bars = this.expand();
+        const pattern = this.expand();
         let strokeIndex = 0;
+        let barIndex = 0;
         let result = "";
     
-        for (let i = 0; i < bars.length; i++) {
+        result += `<span class="bar-${barIndex}" id="bar-${barIndex}">`;
+
+        for (const stroke of pattern) {
             // Color-code each stroke in the pattern and add unique IDs
-            for (const stroke of bars[i]) {
-                result += classifyStroke(stroke, strokeIndex);
-                strokeIndex++;
-                if (strokeIndex % timeSignatureStep == 0) {
-                    // &#8203; is a zero-width space to force the line to break around the bar delimiter
-                    result += "|&#8203;";
-                }
-            }    
+            result += classifyStroke(stroke, strokeIndex, Math.floor(strokeIndex / timeSignatureStep));
+            strokeIndex++;
+
+            let newBarIndex = Math.floor(strokeIndex / timeSignatureStep);
+            if (newBarIndex > barIndex) {
+                // New span
+                barIndex = newBarIndex;
+                // &#8203; is a zero-width space to force the line to break around the bar delimiter
+                result += "</span>|&#8203;";
+                result += `<span class="bar-${barIndex}" id="bar-${barIndex}">`;
+            }
         }
         Logger.debug("Styled exercise: " + result);
         return result;

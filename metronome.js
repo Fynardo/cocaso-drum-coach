@@ -4,6 +4,7 @@ export const Metronome = {
     metronomeInterval: null,
     isPlaying: false,
     currentStrokeIndex: 0,
+    currentBarIndex: 0,
     totalStrokes: 0,
     isInEmptyBar: false,
     emptyBarClickCount: 0,
@@ -137,6 +138,18 @@ export const Metronome = {
         return timeSignatureSettings.beatsPerBar * structureSettings.subdivision;
     },
     
+    highlightBar: function(index) {
+        const previouslyHighlighted = document.querySelector('.bar-highlight');
+        if (previouslyHighlighted) {
+            previouslyHighlighted.classList.remove('bar-highlight');
+        }
+        
+        // Add highlight to current stroke
+        const barElement = document.getElementById('bar-' + index);
+        if (barElement) {
+            barElement.classList.add('bar-highlight');
+        }
+    },
     
     // Highlight stroke functions
     highlightStroke: function(index) {
@@ -236,6 +249,8 @@ export const Metronome = {
        
     // Play click and handle highlighting
     playClickAndHighlight: function() {
+        const metronomeStructure = this.getStructureSettings();
+        const patternTempo = this.getPatternTempoSettings();
         
         if (this.totalStrokes > 0) {
             if (this.isPreparationBar) {
@@ -250,7 +265,9 @@ export const Metronome = {
                     this.currentStrokeIndex = 0;
                     this.highlightStroke(this.currentStrokeIndex);
                     this.currentStrokeIndex += this.calculateStrokeStep();
-    
+                    this.currentBarIndex = Math.floor(this.currentStrokeIndex / (this.getTimeSignatureSettings().beatsPerBar * patternTempo.subdivision));
+                    
+                    this.highlightBar(this.currentBarIndex);
                     this.updateStatusForExercise();
                     // Switch to exercise interval
                     this.switchToExerciseInterval();
@@ -267,6 +284,8 @@ export const Metronome = {
                     this.currentStrokeIndex = 0;
                     this.highlightStroke(this.currentStrokeIndex);
                     this.currentStrokeIndex += this.calculateStrokeStep();
+                    this.currentBarIndex = Math.floor(this.currentStrokeIndex / (this.getTimeSignatureSettings().beatsPerBar * patternTempo.subdivision));
+                    this.highlightBar(this.currentBarIndex);
                     this.updateStatusForExercise();
                     // Switch to exercise interval
                     this.switchToExerciseInterval();
@@ -275,6 +294,8 @@ export const Metronome = {
                 // Normal exercise highlighting with dynamic stroke step
                 this.highlightStroke(this.currentStrokeIndex);
                 this.currentStrokeIndex += this.calculateStrokeStep();
+                this.highlightBar(this.currentBarIndex);
+                this.currentBarIndex = Math.floor(this.currentStrokeIndex / (this.getTimeSignatureSettings().beatsPerBar * patternTempo.subdivision));
                 
                 // Check if we've completed the exercise
                 if (this.currentStrokeIndex > this.totalStrokes) {
