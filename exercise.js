@@ -59,17 +59,16 @@ export const exerciseRepository = {
 }
 
 export const patternRepository = {
-    doubles: {name: "Doubles", pattern: "2(rrll)"},
-    doublesLeft: {name: "Doubles Left", pattern: "2(llrr)"},
+    doubles: {name: "Doubles", pattern: "rrllrrll"},
+    doublesLeft: {name: "Doubles Left", pattern: "llrrllrr"},
     paradiddle: {name: "Paradiddle", pattern: "rlrrlrll"},
     paradiddleAccent: {name: "Paradiddle (Accent)", pattern: "RlRrLrLl"},
     paradiddleLeft: {name: "Paradiddle Left", pattern: "lrllrlrr"},
     doubleParadiddle: {name: "Double Paradiddle", pattern: "rlrlrrlrlrll"},
-    singleBeat: {name: "Singles", pattern: "4(rl)"},
-    singleBeatLeft: {name: "Singles Left", pattern: "4(lr)"},
-    singleAccent: {name: "Singles (accent)", pattern: "4(Rl)"},
-    singleAccentLeft: {name: "Singles (accent) Left", pattern: "r(Lr)"},
-    eightFourTwoTwo: {name: "8-4-2-2", pattern: "8(r) 8(l) 4(r) 4(l) rrllrrll"},
+    singleBeat: {name: "Singles", pattern: "rlrlrlrl"},
+    singleBeatLeft: {name: "Singles Left", pattern: "lrllrlrr"},
+    singleAccent: {name: "Singles (accent)", pattern: "RlRlRlRl"},
+    singleAccentLeft: {name: "Singles (accent) Left", pattern: "LrLrLrLr"},
 }
 
 
