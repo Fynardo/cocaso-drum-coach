@@ -87,6 +87,7 @@ export const exerciseRepository = {
     // More complex exercises are defined using a custom syntax.
     basic1: {name: "Basic 1", pattern: "4(Rrr-) 4(Lll-) 4(Rrr-) 2(Lll-) 2(LlRr)"},
     basic2: {name: "Basic 2", pattern: "7(R-llL-rr) 2(RlLr)"},
+    eightFourTwoTwo: {name: "8-4-2-2", pattern: "8(r) 8(l) 4(r) 4(l) rrllrrll"},
 }
 
 export const patternRepository = {
@@ -100,7 +101,6 @@ export const patternRepository = {
     singleBeatLeft: {name: "Singles Left", pattern: "lrllrlrr"},
     singleAccent: {name: "Singles (accent)", pattern: "RlRlRlRl"},
     singleAccentLeft: {name: "Singles (accent) Left", pattern: "LrLrLrLr"},
-    eightFourTwoTwo: {name: "8-4-2-2", pattern: "8(r) 8(l) 4(r) 4(l) rrllrrll"},
 }
 
 
