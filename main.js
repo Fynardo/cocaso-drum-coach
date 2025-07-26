@@ -64,12 +64,11 @@ document.getElementById('rudiments-form').addEventListener('submit', function(e)
     const formData = new FormData(this);
     const pattern = formData.get('pattern');
     const barsStr = formData.get('bars');
-    const flip = formData.get('flip') === 'true';
     const rndLenStr = formData.get('rnd_len');
     
-    // Get selected strokes
+    // Get selected strokes. The useful ones are the ones not checked, we want to filter them out.
     const strokes = [];
-    const strokeCheckboxes = document.querySelectorAll('input[name="strokes"]:checked');
+    const strokeCheckboxes = document.querySelectorAll('input[name="strokes"]:not(:checked)');
     strokeCheckboxes.forEach(checkbox => {
         strokes.push(checkbox.value);
     });
@@ -87,7 +86,7 @@ document.getElementById('rudiments-form').addEventListener('submit', function(e)
     }
     
     // Generate drum exercise based on the selected pattern
-    const exercise = generateOneBarPatternExercise(pattern, bars, strokes, flip, rndLen);
+    const exercise = generateOneBarPatternExercise(pattern, bars, strokes, rndLen);
     const styledExercise = prepareExercise();
 
     // Display the result

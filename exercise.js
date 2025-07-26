@@ -3,6 +3,7 @@ import { Logger } from './logger.js';
 export const ExerciseEntity = {
     name: "",
     pattern: "",
+    strokes: ["R", "L", "r", "l", "-", "K"],
 
     update: function(name, pattern) {
         this.name = name;
@@ -115,13 +116,12 @@ export function loadExerciseFromRepository(exerciseName) {
     ExerciseEntity.update(exercise.name, exercise.pattern);
 }
 
-export function generateOneBarPatternExercise(pattern, bars, strokes, flip, rndLen) {    
+export function generateOneBarPatternExercise(pattern, bars, strokes, rndLen) {
     let bar = "";
     if (pattern === "random") {
-        bar = generateRandomPattern(rndLen, strokes, flip);
-        pattern = bars + "(" + bar + ")";
+        pattern = generateRandomPattern(rndLen, strokes, bars);
         name = "Random"
-        Logger.debug("Random pattern: " + bar);
+        Logger.debug("Random pattern: " + pattern);
     } else {
         bar = patternRepository[pattern].pattern;
         pattern = bars + "(" + bar + ")";
@@ -130,39 +130,87 @@ export function generateOneBarPatternExercise(pattern, bars, strokes, flip, rndL
     ExerciseEntity.update(name, pattern);
 }
 
-function generateRandomPattern(rndLen, strokes, flip) {
-    // Define default strokes R and L if none selected
-    let availableStrokes = strokes;
-    if (availableStrokes.length === 0) {
-        availableStrokes = ["R", "L"];
-    }
-    
-    let bar = "";
-    
-    // Generate random pattern of specified length
-    for (let i = 0; i < rndLen; i++) {
-        const randomStroke = availableStrokes[Math.floor(Math.random() * availableStrokes.length)];
-        bar += randomStroke;
-    }
-    
-    if (flip) {
-        // Duplicate the random pattern and flip R, r <-> L, l. keep K or any other character unchanged.
-        const copy = bar;
-        for (const c of copy) {
-            if (c === 'R') {
-                bar += 'L';
-            } else if (c === 'L') {
-                bar += 'R';
-            } else if (c === 'r') {
-                bar += 'l';
-            } else if (c === 'l') {
-                bar += 'r';
-            } else {
-                bar += c;
+/*  RANDOM PATTERN UTILS */
+/* First attempt of refactoring the random generator.
+
+The idea is to have a list of what I called "literals". Literals are pairs of strokes,
+calculated by the cartesian product of all the available strokes. These literals will be used to generate the patterns.
+The goal is that these generated patterns help to keep some sort of structure while not losing the random nature of the
+generated exercise.
+
+Strokes can be filtered in the UI by using the checkboxes.
+*/
+
+// I got this from https://stackoverflow.com/questions/12303989/cartesian-product-of-multiple-arrays-in-javascript
+// I don't understand how it works.
+const cartesian =
+  (...a) => a.reduce((a, b) => a.flatMap(d => b.map(e => [d, e].flat())));
+
+// We need the cartesian product as pairs of strokes as strings.
+const randomLiterals = cartesian(ExerciseEntity.strokes, ExerciseEntity.strokes).map(literal => literal.join(""))
+
+function anyR(strokes) {
+    return strokes.indexOf("R") !== -1;
+}
+
+function anyL(strokes) {
+    return strokes.indexOf("L") !== -1;
+}
+
+function anyr(strokes) {
+    return strokes.indexOf("r") !== -1;
+}
+
+function anyl(strokes) {
+    return strokes.indexOf("l") !== -1;
+}
+
+function anyK(strokes) {
+    return strokes.indexOf("K") !== -1;
+}
+
+function anym(strokes) {
+    return strokes.indexOf("-") !== -1;
+}
+
+const filters = {
+    "R": anyR,
+    "L": anyL,
+    "r": anyr,
+    "l": anyl,
+    "-": anym,
+    "K": anyK,
+}
+
+function generateRandomPattern(rndLen, strokes, bars) {
+    let useFilters = []
+    strokes.forEach(stroke => {
+        useFilters.push(filters[stroke]);
+    });
+
+    Logger.debug("Using filters for non-wanted strokes: " + useFilters);
+
+    let availableLiterals = structuredClone(randomLiterals);
+
+    for (const literal of randomLiterals) {
+        for (const filter of useFilters) {
+            if (filter(literal)) {
+                availableLiterals.splice(availableLiterals.indexOf(literal), 1);
+                break;
             }
         }
-    }
+    };
+    Logger.debug("Available Literals for random pattern generation: " + availableLiterals);
+    
+    let bar = "";
+    const literalsPerBar = rndLen / 2;
 
+    for (let i = 0; i < bars; i++) {
+        for (let j = 0; j < literalsPerBar; j++) {
+            bar += availableLiterals[Math.floor(Math.random() * availableLiterals.length)];
+        }
+    }
+    
     return bar;
 }
 
