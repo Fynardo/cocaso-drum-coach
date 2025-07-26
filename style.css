@@ -488,6 +488,22 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
     color: var(--text-primary);
 }
 
+/* Footer link styles */
+.footer-item a {
+    color: var(--text-info);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer-item a:hover {
+    color: var(--btn-primary);
+    text-decoration: underline;
+}
+
+.footer-item a:visited {
+    color: var(--text-info);
+}
+
 /* Responsive footer */
 @media (max-width: 600px) {
     .footer-content {
