@@ -348,12 +348,6 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
     color: var(--text-muted);
 }
 
-.metronome-status {
-    margin-top: 10px;
-    font-weight: bold;
-    color: var(--text-info);
-}
-
 .stroke-highlight {
     background-color: var(--bg-highlight);
     padding: 0px;
@@ -393,6 +387,18 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
     background-color: var(--bg-hover);
     transform: scale(1.1);
     box-shadow: 0 2px 4px var(--shadow-medium);
+}
+
+.highlight-on-click {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.highlight-on-click-label {
+    font-size: 12px;
+    color: var(--text-primary);
 }
 
 .copy-button {

@@ -1,16 +1,19 @@
+import { Logger } from './logger.js';
 
 export const Metronome = {
     audioContext: null,
     metronomeInterval: null,
     isPlaying: false,
-    currentStrokeIndex: 0,
-    currentBarIndex: 0,
-    totalStrokes: 0,
-    isInEmptyBar: false,
-    emptyBarClickCount: 0,
-    isPreparationBar: false,
-    clicksPerBar: 4, // Will be set dynamically based on time-signature and structure
-    emptyBarClicksPerBar: 4, // Will be set dynamically based on time-signature (quarter notes only)
+    currentIndex: 0,
+    maxIndex: 0,
+    schedulerInterval: 0,
+    highlightOnClick: false,
+    msPerMinute: 60000,
+    bpm: 0,
+    quarterNoteInterval: 0,
+    currentBar: 0,
+    beatsPerBar: 0,
+    quartersPerBar: 0,
 
     initAudioContext: function() {
         if (!this.audioContext) {
@@ -49,6 +52,27 @@ export const Metronome = {
         }
     },
 
+    notesRatios: function(patternTempo, metronomeTempo) {
+        const ratios = {
+            "crotchet": {
+                "crotchet": 1,
+                "quaver": null,
+                "semiquaver": null
+            },
+            "quaver": {
+                "crotchet": 2,
+                "quaver": 1,
+                "semiquaver": null
+            },
+            "semiquaver": {
+                "crotchet": 4,
+                "quaver": 2,
+                "semiquaver": 1
+            }
+        }
+        return ratios[patternTempo][metronomeTempo];
+    },
+
     // Get current time-signature settings (time signature)
     getTimeSignatureSettings: function() {
         const timeSignatureSelect = document.getElementById('time-signature');
@@ -60,84 +84,15 @@ export const Metronome = {
     // Get current structure settings
     getStructureSettings: function() {
         const structureSelect = document.getElementById('structure');
-        const structure = structureSelect.value;
-        
-        switch (structure) {
-            case 'crotchet':
-                return {
-                    name: 'Crotchet',
-                    subdivision: 1 // Quarter note divided by 1
-                };
-            case 'quaver':
-                return {
-                    name: 'Quaver',
-                    subdivision: 2 // Quarter note divided by 2
-                };
-            case 'semiquaver':
-                return {
-                    name: 'Semiquaver', 
-                    subdivision: 4 // Quarter note divided by 4
-                };
-            default:
-                return {
-                    name: 'Crotchet',
-                    subdivision: 1
-                };
-        }
+        return structureSelect.value;
     },
     
     // Get current pattern tempo settings
     getPatternTempoSettings: function() {
         const patternTempoSelect = document.getElementById('pattern-tempo');
-        const patternTempo = patternTempoSelect.value;
-    
-        switch (patternTempo) {
-            case 'crotchet':
-                return {
-                    name: 'Crotchet',
-                    subdivision: 1 // Quarter note
-                };
-            case 'quaver':
-                return {
-                    name: 'Quaver',
-                    subdivision: 2 // Eighth note
-                };
-            case 'semiquaver':
-                return {
-                    name: 'Semiquaver',
-                    subdivision: 4 // Sixteenth note
-                };
-            default:
-                return {
-                    name: 'Crotchet',
-                    subdivision: 1
-                };
-        }
+        return patternTempoSelect.value;
     },
-    
-    // Calculate stroke step based on metronome structure vs pattern tempo
-    calculateStrokeStep: function() {
-        const metronomeStructure = this.getStructureSettings();
-        const patternTempo = this.getPatternTempoSettings();
-    
-        // Calculate the ratio between metronome clicks and pattern strokes
-        // metronomeStructure.subdivision represents clicks per quarter note
-        // patternTempo.subdivision represents strokes per quarter note
-        const ratio = patternTempo.subdivision / metronomeStructure.subdivision;
-    
-        // For now, we'll work with simple integer ratios
-        // If ratio >= 1: highlight every ratio-th stroke
-        // If ratio < 1: we need to handle sub-divisions differently
-        return Math.max(1, Math.round(ratio));
-    },
-    
-    // Calculate clicks per bar based on timeSignature and structure
-    getClicksPerBar: function() {
-        const timeSignatureSettings = this.getTimeSignatureSettings();
-        const structureSettings = this.getStructureSettings();
-        return timeSignatureSettings.beatsPerBar * structureSettings.subdivision;
-    },
-    
+        
     highlightBar: function(index) {
         const previouslyHighlighted = document.querySelector('.bar-highlight');
         if (previouslyHighlighted) {
@@ -164,6 +119,12 @@ export const Metronome = {
         if (strokeElement) {
             strokeElement.classList.add('stroke-highlight');
         }
+
+        if (index !== false) {
+            this.currentBar = Math.floor(index / this.beatsPerBar);          
+        }
+        
+        this.highlightBar(this.currentBar);
     },
     
     clearAllHighlights: function() {
@@ -173,147 +134,60 @@ export const Metronome = {
         });
     },
     
-    updateTotalStrokes: function() {
-        // Count total strokes in the exercise
-        const exerciseDisplay = document.getElementById('exercise-display');
-        if (exerciseDisplay) {
-            const strokes = exerciseDisplay.querySelectorAll('[id^="stroke-"]');
-            this.totalStrokes = strokes.length;
-            // Re-make strokes clickable after counting (in case DOM was updated)
-            //makeStrokesClickable();
-        } else {
-            this.totalStrokes = 0;
-        }
-    },
-    
-    // Switch to exercise interval (structure-based)
-    switchToExerciseInterval: function() {
-        if (this.metronomeInterval) {
-            clearInterval(this.metronomeInterval);
-            const bpmInput = document.getElementById('bpm');
-            const bpm = parseInt(bpmInput.value);
-            const structureSettings = this.getStructureSettings();
-            const quarterNoteInterval = 60000 / bpm;
-            const subdivisionInterval = quarterNoteInterval / structureSettings.subdivision;
-            
-            this.metronomeInterval = setInterval(() => {
-                this.playClickAndHighlight();
-            }, subdivisionInterval);
-        }
-    },
-    
-    // Switch to empty bar interval (quarter note based)
-    switchToEmptyBarInterval: function() {
-        if (this.metronomeInterval) {
-            clearInterval(this.metronomeInterval);
-            const bpmInput = document.getElementById('bpm');
-            const bpm = parseInt(bpmInput.value);
-            const quarterNoteInterval = 60000 / bpm;
-            
-            this.metronomeInterval = setInterval(() => {
-                this.playClickAndHighlight();
-            }, quarterNoteInterval);
-        }
-    },
-    
-    // Update status display for preparation bar
-    updateStatusForPreparationBar: function() {
+    refresh: function() {
+        const patternSettings = this.getPatternTempoSettings();
         const bpmInput = document.getElementById('bpm');
-        const bpm = parseInt(bpmInput.value);
-        const timeSignatureSettings = this.getTimeSignatureSettings();
-        const statusText = 'Preparation bar (' + this.emptyBarClickCount + '/' + this.emptyBarClicksPerBar + ') - Get ready! Playing quarter notes in ' + timeSignatureSettings.name + ' at ' + bpm + ' BPM';
-        document.getElementById('metronome-status').textContent = statusText;
+        const timeSig = this.getTimeSignatureSettings().beatsPerBar;
+        this.bpm = parseInt(bpmInput.value);
+        this.quarterNoteInterval = this.msPerMinute / this.bpm;
+        this.schedulerInterval = this.quarterNoteInterval / this.notesRatios(patternSettings, "crotchet");
+        this.quartersPerBar = this.notesRatios(patternSettings, "crotchet");
+        this.beatsPerBar = timeSig * this.quartersPerBar;
     },
-    
-    // Update status display for rest bar
-    updateStatusForRestBar: function() {
-        const bpmInput = document.getElementById('bpm');
-        const bpm = parseInt(bpmInput.value);
-        const timeSignatureSettings = this.getTimeSignatureSettings();
-        const statusText = 'Rest bar (' + this.emptyBarClickCount + '/' + this.emptyBarClicksPerBar + ') - Playing quarter notes in ' + timeSignatureSettings.name + ' at ' + bpm + ' BPM';
-        document.getElementById('metronome-status').textContent = statusText;
-    },
-    
-    // Update status display for exercise
-    updateStatusForExercise: function() {
-        const bpmInput = document.getElementById('bpm');
-        const bpm = parseInt(bpmInput.value);
-        const structureSettings = this.getStructureSettings();
-        const timeSignatureSettings = this.getTimeSignatureSettings();
-        const patternTempoSettings = this.getPatternTempoSettings();
-        const strokeStep = this.calculateStrokeStep();
-        const clicksPerMinute = Math.round(bpm * structureSettings.subdivision);
-        const statusText = 'Playing ' + structureSettings.name.toLowerCase() + 's in ' + timeSignatureSettings.name + ' at ' + bpm + ' BPM (' + clicksPerMinute + ' clicks/min) | Pattern: ' + patternTempoSettings.name.toLowerCase() + 's (step: ' + strokeStep + ')';
-        document.getElementById('metronome-status').textContent = statusText;
-    },
-       
-    // Play click and handle highlighting
-    playClickAndHighlight: function() {
-        const metronomeStructure = this.getStructureSettings();
-        const patternTempo = this.getPatternTempoSettings();
-        
-        if (this.totalStrokes > 0) {
-            if (this.isPreparationBar) {
-                // During preparation bar - no highlighting, just count clicks
-                this.emptyBarClickCount++;
-                this.updateStatusForPreparationBar();
-                
-                if (this.emptyBarClickCount > this.emptyBarClicksPerBar) {
-                    // Preparation bar complete, start exercise
-                    this.isPreparationBar = false;
-                    this.emptyBarClickCount = 0;
-                    this.currentStrokeIndex = 0;
-                    this.highlightStroke(this.currentStrokeIndex);
-                    this.currentStrokeIndex += this.calculateStrokeStep();
-                    this.currentBarIndex = Math.floor(this.currentStrokeIndex / (this.getTimeSignatureSettings().beatsPerBar * patternTempo.subdivision));
-                    
-                    this.highlightBar(this.currentBarIndex);
-                    this.updateStatusForExercise();
-                    // Switch to exercise interval
-                    this.switchToExerciseInterval();
-                }
-            } else if (this.isInEmptyBar) {
-                // During rest bar - no highlighting, just count clicks
-                this.emptyBarClickCount++;
-                this.updateStatusForRestBar();
-    
-                if (this.emptyBarClickCount > this.emptyBarClicksPerBar) {
-                    // Rest bar complete, return to beginning of exercise
-                    this.isInEmptyBar = false;
-                    this.emptyBarClickCount = 0;
-                    this.currentStrokeIndex = 0;
-                    this.highlightStroke(this.currentStrokeIndex);
-                    this.currentStrokeIndex += this.calculateStrokeStep();
-                    this.currentBarIndex = Math.floor(this.currentStrokeIndex / (this.getTimeSignatureSettings().beatsPerBar * patternTempo.subdivision));
-                    this.highlightBar(this.currentBarIndex);
-                    this.updateStatusForExercise();
-                    // Switch to exercise interval
-                    this.switchToExerciseInterval();
-                }
+
+    loadExercise: function(pattern) {
+        this.refresh();
+        this.highlightOnClick = document.getElementById('highlight-on-click').checked;
+        const patternSettings = this.getPatternTempoSettings();
+        const metronomeSettings = this.getStructureSettings();
+        const schedulerHits = pattern.length;
+
+        this.clicks = [];
+        this.highlights = [];
+        // Preparation bar
+        for (let i = 0; i < this.beatsPerBar; i++) {
+            if (i % this.quartersPerBar == 0) {
+                this.clicks.push('prepClick');
             } else {
-                // Normal exercise highlighting with dynamic stroke step
-                this.highlightStroke(this.currentStrokeIndex);
-                this.currentStrokeIndex += this.calculateStrokeStep();
-                this.highlightBar(this.currentBarIndex);
-                this.currentBarIndex = Math.floor(this.currentStrokeIndex / (this.getTimeSignatureSettings().beatsPerBar * patternTempo.subdivision));
-                
-                // Check if we've completed the exercise
-                if (this.currentStrokeIndex > this.totalStrokes) {
-                    // Exercise complete, enter rest bar
-                    this.clearAllHighlights();
-                    this.isInEmptyBar = true;
-                    this.emptyBarClickCount = 1;
-                    this.updateStatusForRestBar();
-                    // Switch to empty bar interval
-                    this.switchToEmptyBarInterval();
+                this.clicks.push(false);
+            }
+            this.highlights.push(false); // No highlighting on preparation bar
+        }
+
+        for (let i = 0; i < schedulerHits; i++) {
+            const isClick = i % this.notesRatios(patternSettings, metronomeSettings) == 0;
+            if (isClick) {
+                this.clicks.push('click');
+                this.highlights.push(i);
+            } else {
+                this.clicks.push(false);
+                if (this.highlightOnClick) {
+                    this.highlights.push(false); 
+                } else {
+                    this.highlights.push(i);
                 }
             }
         }
-        if (this.isPreparationBar) {
+        this.maxIndex = this.clicks.length;
+        Logger.debug("Metronome", "Max index: " + this.maxIndex);
+        Logger.debug("Metronome", "Clicks: " + this.clicks);
+        Logger.debug("Metronome", "Highlights: " + this.highlights);
+    },
+
+    playClick: function(clickType) {
+        if (clickType === 'prepClick') {
             this.playPreparationClick();
-        } else if (this.isInEmptyBar) {
-            this.playPreparationClick();
-        } else {
+        } else if (clickType === 'click') {
             this.playExerciseClick();
         }
     },
@@ -374,55 +248,25 @@ export const Metronome = {
             this.audioContext.resume();
         }
         
-        // Get BPM from input field
-        const bpmInput = document.getElementById('bpm');
-        const bpm = parseInt(bpmInput.value);
-        
         // Validate BPM range
-        if (bpm < 30 || bpm > 250 || isNaN(bpm)) {
+        if (this.bpm < 30 || this.bpm > 250 || isNaN(this.bpm)) {
             alert('Please enter a valid BPM between 30 and 250');
             return;
         }
 
-        // Get structure settings and calculate intervals
-        const structureSettings = this.getStructureSettings();
-        const timeSignatureSettings = this.getTimeSignatureSettings();
-        this.clicksPerBar = this.getClicksPerBar();
-        this.emptyBarClicksPerBar = timeSignatureSettings.beatsPerBar;
-        
-        // BPM is quarter notes, calculate intervals
-        const quarterNoteInterval = 60000 / bpm; // Quarter note interval in ms
-
-        this.isPlaying = true;
-        
-        // Initialize highlighting system with preparation bar
-        this.updateTotalStrokes();
-        this.currentStrokeIndex = 0;
-        this.isInEmptyBar = false;
-        this.isPreparationBar = true;
-        this.emptyBarClickCount = 0;
-        
-        // Set initial status for preparation
-        this.updateStatusForPreparationBar();
-        
+        this.isPlaying = true;    
         
         if (document.getElementById("exercise-div").innerHTML === "") {
-            // If no exercise is generated, just play some clicks
-            this.playPreparationClick();
-
-            // Start interval for subsequent clicks (quarter note interval for preparation bar)
-            this.metronomeInterval = setInterval(() => {
-                this.playPreparationClick();
-            }, quarterNoteInterval);
+           console.log("Not implemented yet")
         } else {
-            // Play first click of preparation bar
-            this.playClickAndHighlight();
-            
-
-            // Start interval for subsequent clicks (quarter note interval for preparation bar)
-            this.metronomeInterval = setInterval(() => {
-                this.playClickAndHighlight();
-            }, quarterNoteInterval);
+            this.metronomeInterval = setInterval(() => {            
+                this.playClick(this.clicks[this.currentIndex]);
+                this.highlightStroke(this.highlights[this.currentIndex]);
+                this.currentIndex++;
+                if (this.currentIndex >= this.maxIndex) {
+                    this.currentIndex = 0;
+                }
+            }, this.schedulerInterval);
         }
     },
 
@@ -437,11 +281,7 @@ export const Metronome = {
         
         // Clear all highlights and reset state
         this.clearAllHighlights();
-        this.currentStrokeIndex = 0;
-        this.isInEmptyBar = false;
-        this.isPreparationBar = false;
-        this.emptyBarClickCount = 0;
-        
-        document.getElementById('metronome-status').textContent = 'Stopped';
+        this.currentIndex = 0;
+        this.currentBar = 0;
     }
 }
