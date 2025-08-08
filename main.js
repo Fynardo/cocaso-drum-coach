@@ -3,11 +3,10 @@ import { Metronome } from './metronome.js';
 import { ThemeManager } from './theme.js';
 import { Logger } from './logger.js';
 
-
 // Set current year dynamically
  document.addEventListener('DOMContentLoaded', function() {
     const currentYear = new Date().getFullYear();
-    document.getElementById('current-year').textContent = currentYear;
+    document.getElementById('current-year').textContent = currentYear;      
 });
 
 // User Inteface functions made global because I don't know how to do it otherwise lul
@@ -18,7 +17,6 @@ function startMetronome() {
 function stopMetronome() {
     Metronome.stop();
 }
-
 
 window.startMetronome = startMetronome;
 window.stopMetronome = stopMetronome;
@@ -34,29 +32,36 @@ document.getElementById('debug-button').addEventListener('click', () => {
 const strokeCycle = ['R', 'r', 'L', 'l', 'K', '-'];
 
 function prepareExercise() {
-    Logger.debug("Preparing exercise");
-    const timeSignature = Metronome.getTimeSignatureSettings();
-    const patternTempo = Metronome.getPatternTempoSettings();
-    const step = timeSignature.beatsPerBar * patternTempo.subdivision; // Example: 3/4 * quavers (2) = 6 -> Space each 6 strokes
-    Logger.debug("Step: " + step);
+    Metronome.refresh();
+    Metronome.loadExercise(ExerciseEntity.expand());
+    Logger.debug("Main", "Preparing exercise");
+    const step = Metronome.beatsPerBar; // Example: 3/4 * quavers (2) = 6 -> Space each 6 strokes
+    Logger.debug("Main", "Step: " + step);
     const styledExercise = ExerciseEntity.style(step);
     return styledExercise;
 }
 
+document.getElementById('highlight-on-click').onchange = function() {
+    Logger.debug("Main", "Highlight on click changed");
+    Metronome.highlightOnClick = document.getElementById('highlight-on-click').checked;
+    document.getElementById('exercise-display').innerHTML = prepareExercise();
+}
 
 document.getElementById('time-signature').onchange = function() {
     // Update the exercise
-    Logger.debug("Time signature changed");
+    Logger.debug("Main", "Time signature changed");
     document.getElementById('exercise-display').innerHTML = prepareExercise();
     makeStrokesClickable();
 }
 
 document.getElementById('pattern-tempo').onchange = function() {
     // Update the exercise
-    Logger.debug("Pattern tempo changed");
+    Logger.debug("Main", "Pattern tempo changed");
     document.getElementById('exercise-display').innerHTML = prepareExercise();
     makeStrokesClickable();
 }
+
+
 
 // Forms submission handler
 document.getElementById('rudiments-form').addEventListener('submit', function(e) {
@@ -290,7 +295,11 @@ function populateForms() {
 
     const timeSignatureSelect = document.getElementById('time-signature');
     for (const [key, value] of Object.entries(Metronome.timeSignatures)) {
-        timeSignatureSelect.innerHTML += `<option value="${key}">${value.name}</option>`;
+        if (key === '4/4') {
+            timeSignatureSelect.innerHTML += `<option value="${key}" selected>${value.name}</option>`;
+        } else {
+            timeSignatureSelect.innerHTML += `<option value="${key}">${value.name}</option>`;
+        }
     }
 }
 

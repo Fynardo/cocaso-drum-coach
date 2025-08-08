@@ -147,9 +147,6 @@
             <div class="form-group">
                 <label for="time-signature">Time Signature:</label>
                 <select id="time-signature" name="time_signature" required>
-                    <option value="3/4">3/4</option>
-                    <option value="4/4" selected>4/4</option>
-                    <option value="5/4">5/4</option>
                 </select>
                 <small style="color: #666;">Choose the time signature for your practice</small>
             </div>
@@ -173,12 +170,14 @@
                     <small style="color: #666;">Note value that each stroke represents</small>
                 </div>
             </div>
+            <div class="highlight-on-click">
+                <input type="checkbox" id="highlight-on-click" name="highlight-on-click" checked>
+                <label class="highlight-on-click-label" for="highlight-on-click">Only highlight on click</label>
+            </div>
             <div class="metronome-controls">
                 <button class="metronome-btn play-btn" onclick="startMetronome()">Play</button>
                 <button class="metronome-btn stop-btn" onclick="stopMetronome()">Stop</button>
             </div>
-            <div class="metronome-status" id="metronome-status">Ready</div>
-            
         </div>
 
         <div id="exercise-div"></div>

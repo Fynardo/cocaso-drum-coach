@@ -8,7 +8,7 @@ export const ExerciseEntity = {
     update: function(name, pattern) {
         this.name = name;
         this.pattern = pattern;
-        Logger.debug("Updated exercise: " + this.name + " " + this.pattern);
+        Logger.debug("Exercise", "Updated exercise: " + this.name + " " + this.pattern);
     },
 
     style: function(timeSignatureStep) {
@@ -33,7 +33,7 @@ export const ExerciseEntity = {
                 result += `<span class="bar-${barIndex}" id="bar-${barIndex}">`;
             }
         }
-        Logger.debug("Styled exercise: " + result);
+        Logger.debug("Exercise", "Styled exercise: " + result);
         return result;
     },
 
@@ -45,12 +45,12 @@ export const ExerciseEntity = {
             - 2(3(rr)ll) -> rrrrrrllrrrrrrll (nested groups)
         */
         const trimmed = this.pattern.replaceAll(" ", "");
-        Logger.debug("Expanding pattern: " + trimmed);
+        Logger.debug("Exercise", "Expanding pattern: " + trimmed);
         return this.expandToken(trimmed);
     },
 
     expandToken: function(token) {
-        Logger.debug("Expanding token: " + token);
+        Logger.debug("Exercise", "Expanding token: " + token);
         // Base case: if no parentheses, return as is
         if (!token.includes('(')) {
             return token;
@@ -127,7 +127,7 @@ export function generateOneBarPatternExercise(pattern, bars, strokes, rndLen) {
     if (pattern === "random") {
         pattern = generateRandomPattern(rndLen, strokes, bars);
         name = "Random"
-        Logger.debug("Random pattern: " + pattern);
+        Logger.debug("Exercise", "Random pattern: " + pattern);
     } else {
         bar = patternRepository[pattern].pattern;
         pattern = bars + "(" + bar + ")";
@@ -194,7 +194,7 @@ function generateRandomPattern(rndLen, strokes, bars) {
         useFilters.push(filters[stroke]);
     });
 
-    Logger.debug("Using filters for non-wanted strokes: " + useFilters);
+    Logger.debug("Exercise", "Using filters for non-wanted strokes: " + useFilters);
 
     let availableLiterals = structuredClone(randomLiterals);
 
@@ -206,7 +206,7 @@ function generateRandomPattern(rndLen, strokes, bars) {
             }
         }
     };
-    Logger.debug("Available Literals for random pattern generation: " + availableLiterals);
+    Logger.debug("Exercise", "Available Literals for random pattern generation: " + availableLiterals);
     
     let bar = "";
     const literalsPerBar = rndLen / 2;

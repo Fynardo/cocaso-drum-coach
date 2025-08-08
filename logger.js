@@ -1,13 +1,13 @@
 export const Logger = {
     debugMode: false,
 
-    debug: function(message) {
+    debug: function(system, message) {
         if (this.debugMode) {
-            console.log(message);
+            console.log(system + ": " + message);
         }
     },
 
-    error: function(message) {
-        console.error(message);
+    error: function(system, message) {
+        console.error(system + ": " + message);
     }
 }
