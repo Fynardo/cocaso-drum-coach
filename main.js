@@ -61,6 +61,20 @@ document.getElementById('pattern-tempo').onchange = function() {
     makeStrokesClickable();
 }
 
+document.getElementById('structure').onchange = function() {
+    // Update the exercise
+    Logger.debug("Main", "Structure changed");
+    document.getElementById('exercise-display').innerHTML = prepareExercise();
+    makeStrokesClickable();
+}
+
+document.getElementById('bpm').onchange = function() {
+    // Update the exercise
+    Logger.debug("Main", "BPM changed");
+    document.getElementById('exercise-display').innerHTML = prepareExercise();
+    makeStrokesClickable();
+}
+
 
 
 // Forms submission handler
