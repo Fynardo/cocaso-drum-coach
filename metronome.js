@@ -166,7 +166,7 @@ export const Metronome = {
 
         for (let i = 0; i < schedulerHits; i++) {
             const isClick = i % this.notesRatios(patternSettings, metronomeSettings) == 0;
-            if (isClick) {
+            if (isClick && pattern[i] !== '-') {
                 this.clicks.push('click');
                 this.highlights.push(i);
             } else {
