@@ -94,6 +94,7 @@ export const ExerciseEntity = {
 
 export const exerciseRepository = {
     // More complex exercises are defined using a custom syntax.
+    warmup: {name: "Warm Up", pattern: "8(4(R-L-))8(2(R-R-L-L-))8(4(R-)4(L-))4(8(R-)8(L-))8(R-)8(L-)4(8(RL))"},
     basic1: {name: "Basic 1", pattern: "4(Rrr-) 4(Lll-) 4(Rrr-) 2(Lll-) 2(LlRr)"},
     basic2: {name: "Basic 2", pattern: "7(R-llL-rr) 2(RlLr)"},
     eightFourTwoTwo: {name: "8-4-2-2", pattern: "8(r) 8(l) 4(r) 4(l) rrllrrll"},
@@ -238,4 +239,5 @@ function classifyStroke(stroke, strokeIndex) {
         default:
             return `<span id="stroke-${strokeIndex}">${stroke}</span>`;
     }
+
 }
